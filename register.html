@@ -16,6 +16,34 @@
     </ul>
 </nav>
 <h1>Register</h1>
+<form>
+    <fieldset>
+        <div>
+            <label for="id">ID</label>
+            <input id="id" required>
+        </div>
+        <div>
+            <label for="pw">Password</label>
+            <input id="pw" type="password" required>
+        </div>
+        <div>
+            <label for="pw-again">Password again</label>
+            <input id="pw-again" type="password" required>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" required>
+            <button>Send verification code</button>
+        </div>
+        <div>
+            <label for="code">Verification code</label>
+            <input id="code" required>
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
 <footer>
     Footer contents
 </footer>
