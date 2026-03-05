@@ -1,0 +1,16 @@
+nav {
+    border: 1px solid lightgray;
+}
+
+nav ul {
+    padding: 0;
+}
+
+nav ul li {
+    display: inline-block;
+}
+
+footer {
+    background-color: darkgray;
+    color: lightgray;
+}
