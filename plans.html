@@ -6,15 +6,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav>
-    <ul>
-        <li><a href="index.html"><img src="" alt="logo">Index</a></li>
-        <li><a href="plans.html">Plans</a></li>
-        <li>Search</li>
-        <li><a href="login.html">Login</a></li>
-        <li><a href="register.html">Register</a></li>
-    </ul>
-</nav>
+<div id="navbar-container">
+    <script>
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            });
+    </script>
+</div>
 <h1>Plans</h1>
 <footer>
     Footer contents
