@@ -16,14 +16,14 @@
     </ul>
 </nav>
 <h1>Login</h1>
-<form>
+<form method="post" action="/login-verification">
     <div>
         <label for="username">Username</label>
-        <input id="username" required>
+        <input id="username" name="username" required>
     </div>
     <div>
-        <label for="pw">Password</label>
-        <input id="pw" type="password" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
     </div>
     <button type="submit">Submit</button>
 </form>
