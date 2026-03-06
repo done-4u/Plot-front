@@ -6,15 +6,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="navbar-container">
-    <script>
-        fetch('navbar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("navbar-container").innerHTML = data;
-            });
-    </script>
-</div>
+<div id="navbar-container"></div>
 <h1>Login</h1>
 <form method="post" action="/login-verification">
     <div>
@@ -34,5 +26,6 @@
 <footer>
     Footer contents
 </footer>
+<script src="js/include.js"></script>
 </body>
 </html>
