@@ -3,19 +3,19 @@
 <head>
     <title>Plot, your story</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
 <div id="navbar-container"></div>
 <h1>Sign in</h1>
-<form method="post" action="/sign-in">
+<form action="/sign-in" method="post">
     <div>
         <label for="username">Username</label>
         <input id="username" name="username" required>
     </div>
     <div>
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" required>
+        <input id="password" name="password" required type="password">
     </div>
     <button type="submit">Submit</button>
 </form>

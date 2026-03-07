@@ -3,12 +3,12 @@
 <head>
     <title>Plot, your story</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
 <div id="navbar-container"></div>
 <h1>Sign up</h1>
-<form method="post" action="/sign-up">
+<form action="/sign-up" method="post">
     <fieldset>
         <div>
             <label for="username">Username</label>
@@ -16,17 +16,17 @@
         </div>
         <div>
             <label for="password">Password</label>
-            <input id="password" type="password" name="password" required>
+            <input id="password" name="password" required type="password">
         </div>
         <div>
             <label for="pw-again">Password again</label>
-            <input id="pw-again" type="password" required>
+            <input id="pw-again" required type="password">
         </div>
     </fieldset>
     <fieldset>
         <div>
             <label for="email">Email</label>
-            <input id="email" type="email" name="email" required>
+            <input id="email" name="email" required type="email">
             <button>Send verification code</button>
         </div>
         <div>
