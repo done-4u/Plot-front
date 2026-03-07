@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Plot, your story</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1>Sign up</h1>
+<form method="post" action="/sign-up">
+    <fieldset>
+        <div>
+            <label for="username">Username</label>
+            <input id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" required>
+        </div>
+        <div>
+            <label for="pw-again">Password again</label>
+            <input id="pw-again" type="password" required>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required>
+            <button>Send verification code</button>
+        </div>
+        <div>
+            <label for="code">Verification code</label>
+            <input id="code" required>
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+<div id="footer-container"></div>
+<script src="js/include.js"></script>
+</body>
+</html>
