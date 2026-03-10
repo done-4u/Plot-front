@@ -8,6 +8,48 @@
 <body>
 <div id="navbar-container"></div>
 <h1>Announcements</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Datetime</th>
+    </tr>
+    </thead>
+    <tbody id="announcement-tbody">
+    <!-- Table body comes here by JS -->
+    </tbody>
+</table>
+<script>
+    const tbody = document.getElementById('announcement-tbody');
+
+    // pinned announcements first
+    fetch("/announcements-pinned", {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => data.forEach(
+            item => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td><a href="">${item.title}</a></td><td>${item.createdAt.split("T")[0]}</td>`
+                tbody.appendChild(tr);
+            }
+        ))
+
+    const last_pinned = tbody.lastElementChild;
+    if (last_pinned) {
+        last_pinned.style = "border-bottom: 1px solid black;"
+    }
+
+    // recent announcements
+    // TODO: add page and size params
+    fetch("/announcements-recent", {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => data.forEach(
+            item => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td><a href="">${item.title}</a></td><td>${item.createdAt.split("T")[0]}</td>`
+                tbody.appendChild(tr);
+            }
+        ))
+</script>
 <script src="js/include.js"></script>
 </body>
 </html>
