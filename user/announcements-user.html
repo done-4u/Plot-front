@@ -23,7 +23,7 @@
     const tbody = document.getElementById('announcement-tbody');
 
     // pinned announcements first
-    fetch("/announcements-pinned", {headers: {"accept": "application/json"}})
+    fetch("/api/announcements-pinned", {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => data.forEach(
             item => {
@@ -40,7 +40,7 @@
 
     // recent announcements
     // TODO: add page and size params
-    fetch("/announcements-recent", {headers: {"accept": "application/json"}})
+    fetch("/api/announcements-recent", {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => data.forEach(
             item => {
