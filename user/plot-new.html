@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot: new plot</title>
+    <link href="../common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1>New Plot</h1>
+<form action="/api/plot-new" method="post">
+    <fieldset>
+        <legend>Basic Information</legend>
+        <div>
+            <label for="title">Title</label>
+            <input id="title" name="title" required>
+        </div>
+        <div>
+            <label for="description">Description</label>
+            <input id="description" name="description">
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Access</legend>
+        <div>
+            <label for="public">Public</label>
+            <input id="public" name="access" value="male" type="radio" required>
+            <label for="private">Private</label>
+            <input id="private" name="access" value="female" type="radio">
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+<script src="../common/include.js"></script>
+</body>
+</html>
