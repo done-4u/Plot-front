@@ -21,7 +21,7 @@
 </table>
 <script>
     const tbody = document.getElementById('plots-tbody');
-    fetch("/api/plots", {headers: {"accept": "application/json"}})
+    fetch("/api/plot-list", {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => data.forEach(
             item => {
