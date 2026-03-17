@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="../common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1 id="h1-title"></h1>
+<span id="span-description"></span>
+<h2>Backgrounds</h2>
+<h3>Times</h3>
+<div id="times-container"></div>
+<h3>Spaces</h3>
+<div id="spaces-container"></div>
+<h2>Characters</h2>
+<div id="characters-container"></div>
+<script>
+    // TODO: organize API
+    fetch("/api/plot-detail/times" + window.location.search, {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+            const times_container = document.getElementById("times-container");
+            times_container.innerText = data.map(item => item.id).join(" ");
+        })
+    fetch("/api/plot-detail/spaces" + window.location.search, {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+            const spaces_container = document.getElementById("spaces-container");
+            spaces_container.innerText = data.map(item => item.name).join(" ");
+        })
+
+    fetch("/api/plot-detail/characters" + window.location.search, {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+            const characters_container = document.getElementById("characters-container");
+            characters_container.innerText = data.map(item => item.name).join(" ");
+        })
+</script>
+<script src="../common/include.js"></script>
+</body>
+</html>
