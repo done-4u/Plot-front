@@ -17,7 +17,6 @@
 <h2>Characters</h2>
 <div id="characters-container"></div>
 <script>
-    // TODO: organize API
     fetch("/api/plot-detail/times" + window.location.search, {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => {
