@@ -29,7 +29,6 @@
             const spaces_container = document.getElementById("spaces-container");
             spaces_container.innerText = data.map(item => item.name).join(" ");
         })
-
     fetch("/api/plot-detail/characters" + window.location.search, {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => {

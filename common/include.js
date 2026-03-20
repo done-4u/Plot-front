@@ -8,10 +8,12 @@ function insert(input_file, parent_id) {
     }
 }
 
-const PAIRS = [// trick: there is navbar.html in user directory as well as guest directory
+const PAIRS = [
+    ["../common/announcement-detail-common.html", "announcement-detail-container"],
+    ["../common/announcement-list-common.html", "announcement-list-container"],
+    // trick: there is navbar.html in user directory as well as guest directory
     ["navbar.html", "navbar-container"],
-
-    ["../common/announcement-list-common.html", "announcement-list-container"]]
+]
 
 for (const pair of PAIRS) {
     insert(pair[0], pair[1])
