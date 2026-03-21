@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot: my profile</title>
+    <link href="../common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1>Profile</h1>
+<h2>Description</h2>
+<div id="description-container"></div>
+<script>
+    fetch("/api/profile-guest" + window.location.search, {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+            const description = document.getElementById("description-container");
+            description.innerText = data.description;
+        })
+</script>
+<script src="../common/include.js"></script>
+</body>
+</html>
