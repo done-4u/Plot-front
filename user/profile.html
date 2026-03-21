@@ -7,7 +7,17 @@
 </head>
 <body>
 <div id="navbar-container"></div>
-<h1>Profile (User)</h1>
+<h1>Profile</h1>
+<h2>Description</h2>
+<div id="description-container"></div>
+<script>
+    fetch("/api/profile-user", {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+            const description = document.getElementById("description-container");
+            description.innerText = data.description;
+        })
+</script>
 <script src="../common/include.js"></script>
 </body>
 </html>
