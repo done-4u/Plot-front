@@ -10,6 +10,7 @@
             </form>
         </li>
         <li><a href="../user/announcement-list.html">Announcements</a></li>
+        <li><span id="username-container"></span></li>
         <li><a href="../user/settings.html">Settings</a></li>
         <li>
             <form action="/api/sign-out" method="post">
@@ -18,3 +19,9 @@
         </li>
     </ul>
 </nav>
+<script>
+    const username = document.getElementById("username-container")
+    cookieStore.get("username").then(cookie => {
+        username.innerText = cookie.value
+    })
+</script>
