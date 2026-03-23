@@ -1,0 +1,16 @@
+export const template = `<nav id="navbar-guest">
+    <ul>
+        <li><a href="/index"><img alt="logo" src="">Index</a></li>
+        <li><a href="/plans">Plans</a></li>
+        <li>
+            <form>
+                <label for="search-guest">Search</label>
+                <input id="search-guest" name="search" type="search" placeholder="..." required>
+                    <button type="submit">Submit</button>
+            </form>
+        </li>
+        <li><a href="/announcements">Announcements</a></li>
+        <li><a href="/sign-in">Sign in</a></li>
+        <li><a href="/sign-up">Sign up</a></li>
+    </ul>
+</nav>`;

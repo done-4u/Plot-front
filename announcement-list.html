@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="/common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1>Announcement List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Datetime</th>
+    </tr>
+    </thead>
+    <tbody id="announcement-tbody">
+    <!-- Table body comes here by JS -->
+    </tbody>
+</table>
+<script>
+    const tbody = document.getElementById("announcement-tbody");
+
+    fetch("/api/announcements?pinned=true", {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => {
+                const children = data.map(item => {
+                    const tr = document.createElement("tr");
+                    const href = `announcements/${item.id}`;
+                    tr.innerHTML = `<td>📌</td><td><a href="${href}">${item.title}</a></td><td>${item.createdAt.split("T")[0]}</td>`;
+                    return tr
+                })
+                tbody.prepend(...children)
+            }
+        )
+
+    // recent announcements
+    // TODO: add page and size params
+    fetch("/api/announcements", {headers: {"accept": "application/json"}})
+        .then(response => response.json())
+        .then(data => data.forEach(
+            item => {
+                const tr = document.createElement("tr");
+                const href = `announcements/${item.id}`;
+                tr.innerHTML = `<td>${item.id}</td><td><a href="${href}">${item.title}</a></td><td>${item.createdAt.split("T")[0]}</td>`
+                tbody.appendChild(tr);
+            }
+        ))
+</script>
+<script src="/common/include.js"></script>
+</body>
+</html>

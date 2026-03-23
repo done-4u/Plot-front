@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="/common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
 <h1>Announcement Detail</h1>
 <table>
     <thead>
@@ -14,7 +23,7 @@
 <h2>Content</h2>
 <div id="content-container"></div>
 <script>
-    fetch("/api/announcement-detail" + window.location.search, {headers: {"accept": "application/json"}})
+    fetch("/api" + window.location.pathname, {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => {
                 const tbody = document.getElementById("announcement-tbody");
@@ -27,3 +36,6 @@
             }
         )
 </script>
+<script src="/common/include.js"></script>
+</body>
+</html>

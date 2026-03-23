@@ -1,20 +1,19 @@
-function insert(input_file, parent_id) {
-    const parent = document.getElementById(parent_id);
-    if (parent) {
-        fetch(input_file).then(response => response.text()).then(data => {
-            const fragment = document.createRange().createContextualFragment(data)
-            parent.appendChild(fragment)
-        })
-    }
-}
+fetch("/api/signed-in-as")
+    .then(response => {
+        response.json()
+            .then(data => {
+                // (probably) navbar is anywhere, so parent is defined
+                const parent = document.getElementById("navbar-container");
+                const username = data.username
 
-const PAIRS = [
-    ["../common/announcement-detail-common.html", "announcement-detail-container"],
-    ["../common/announcement-list-common.html", "announcement-list-container"],
-    // trick: there is navbar.html in user directory as well as guest directory
-    ["navbar.html", "navbar-container"],
-]
-
-for (const pair of PAIRS) {
-    insert(pair[0], pair[1])
-}
+                // API: the username is empty string("") if not signed in
+                if (username) {
+                    // caution: bare specifier
+                    import("./navbar-user.js").then(response => {
+                        parent.innerHTML = response.getNavbar(data.username)
+                    })
+                } else {
+                    import("./navbar-guest.js").then(response => parent.innerHTML = response.template)
+                }
+            })
+    })

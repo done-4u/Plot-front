@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Plot: my plots</title>
-    <link href="../common/style.css" rel="stylesheet">
+    <link href="/common/style.css" rel="stylesheet">
 </head>
 <body>
 <div id="navbar-container"></div>
@@ -21,17 +21,17 @@
 </table>
 <script>
     const tbody = document.getElementById('plots-tbody');
-    fetch("/api/plot-list", {headers: {"accept": "application/json"}})
+    fetch("/api" + window.location.pathname, {headers: {"accept": "application/json"}})
         .then(response => response.json())
         .then(data => data.forEach(
             item => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td><a href="plot-detail.html?title=${item.title}">${item.title}</a></td><td>${item.description}</td>`
+                tr.innerHTML = `<td><a href="plots/${item.title}">${item.title}</a></td><td>${item.description}</td>`
                 tbody.appendChild(tr);
             }
         ))
 </script>
-<a href="plot-new.html">New plot</a>
-<script src="../common/include.js"></script>
+<a href="plots/new">New plot</a>
+<script src="/common/include.js"></script>
 </body>
 </html>
