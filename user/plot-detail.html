@@ -7,15 +7,53 @@
 </head>
 <body>
 <div id="navbar-container"></div>
-<h1 id="h1-title"></h1>
-<span id="span-description"></span>
-<h2>Backgrounds</h2>
-<h3>Times</h3>
-<div id="times-container"></div>
-<h3>Spaces</h3>
-<div id="spaces-container"></div>
-<h2>Characters</h2>
-<div id="characters-container"></div>
+<h1>Title</h1>
+<div id="tab-container">
+    <nav id="tab-buttons-container">
+        <button class="tab-button active">Summary</button>
+        <button class="tab-button">Backgrounds</button>
+        <button class="tab-button">Characters</button>
+        <button class="tab-button">Events</button>
+    </nav>
+    <div id="tab-divs-container">
+        <div class="tab-div active">
+            <h2>Backgrounds</h2>
+            <div>
+                <h3>Times</h3>
+                <span id="times-container"></span>
+                <h3>Spaces</h3>
+                <span id="spaces-container"></span>
+            </div>
+            <h2>Characters</h2>
+            <span id="characters-container"></span>
+            <h2>Events</h2>
+            <span id="events-container"></span>
+        </div>
+        <div class="tab-div">2</div>
+        <div class="tab-div">3</div>
+        <div class="tab-div">4</div>
+    </div>
+</div>
+<script>
+    const tabButtonsContainer = document.getElementById("tab-buttons-container");
+    const tabButtons = document.getElementsByClassName("tab-button");
+    const tabDivs = document.getElementsByClassName("tab-div");
+
+    tabButtonsContainer.addEventListener("click", e => {
+        const targetTabButton = e.target.closest(".tab-button");
+        if (targetTabButton) {
+            // this inefficiency is intended
+            const tabButtonsArray = Array.from(tabButtons)
+            const tabDivsArray = Array.from(tabDivs)
+            const index = tabButtonsArray.indexOf(targetTabButton)
+
+            tabButtonsArray.forEach(btn => btn.classList.remove("active"));
+            tabDivsArray.forEach(item => item.classList.remove("active"));
+            targetTabButton.classList.add("active");
+            tabDivsArray[index].classList.add("active")
+        }
+    });
+</script>
 <script>
     fetch("/api/plot-detail/times" + window.location.search, {headers: {"accept": "application/json"}})
         .then(response => response.json())
