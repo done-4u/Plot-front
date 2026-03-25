@@ -24,25 +24,20 @@
 <div id="characters-container"></div>
 <h3>Events</h3>
 <div id="events-container"></div>
-<script>
-    fetch("/api" + window.location.pathname + "/times", {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => {
-            const times_container = document.getElementById("times-container");
-            times_container.innerText = data.map(item => item.id).join(" ");
-        })
-    fetch("/api" + window.location.pathname + "/spaces", {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => {
-            const spaces_container = document.getElementById("spaces-container");
-            spaces_container.innerText = data.map(item => item.name).join(" ");
-        })
-    fetch("/api" + window.location.pathname + "/characters", {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => {
-            const characters_container = document.getElementById("characters-container");
-            characters_container.innerText = data.map(item => item.name).join(" ");
-        })
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils";
+
+    const timesData = await fetchJsonOfPathnameApi();
+    const times_container = document.getElementById("times-container");
+    times_container.innerText = timesData.map(item => item.id).join(" ");
+
+    const spacesData = await fetchJsonOfPathnameApi();
+    const spaces_container = document.getElementById("spaces-container");
+    spaces_container.innerText = spacesData.map(item => item.id).join(" ");
+
+    const charactersData = await fetchJsonOfPathnameApi();
+    const characters_container = document.getElementById("characters-container");
+    characters_container.innerText = charactersData.map(item => item.id).join(" ");
 </script>
 <script src="/common/navbar.js"></script>
 </body>

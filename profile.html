@@ -11,13 +11,12 @@
 <h2>Description</h2>
 <div id="description-container"></div>
 <a href="/settings">Edit</a>
-<script>
-    fetch("/api" + window.location.pathname, {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => {
-            const description = document.getElementById("description-container");
-            description.innerText = data.description;
-        })
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+
+    const data = await fetchJsonOfPathnameApi()
+    const description = document.getElementById("description-container");
+    description.innerText = data.description;
 </script>
 <script src="/common/navbar.js"></script>
 </body>

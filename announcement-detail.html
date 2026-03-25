@@ -22,19 +22,17 @@
 </table>
 <h2>Content</h2>
 <div id="content-container"></div>
-<script>
-    fetch("/api" + window.location.pathname, {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => {
-                const tbody = document.getElementById("announcement-tbody");
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${data.id}</td><td>${data.title}</td><td>${data.createdAt.split("T")[0]}</td>`;
-                tbody.appendChild(tr)
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
-                const content = document.getElementById("content-container")
-                content.innerText = data.content
-            }
-        )
+    const data = await fetchJsonOfPathnameApi()
+    const tbody = document.getElementById("announcement-tbody");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${data.id}</td><td>${data.title}</td><td>${data.createdAt.split("T")[0]}</td>`;
+    tbody.appendChild(tr)
+
+    const content = document.getElementById("content-container")
+    content.innerText = data.content
 </script>
 <script src="/common/navbar.js"></script>
 </body>

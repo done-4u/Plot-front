@@ -19,17 +19,18 @@
     <!-- Table body comes here by JS -->
     </tbody>
 </table>
-<script>
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+
+    const data = await fetchJsonOfPathnameApi();
     const tbody = document.getElementById('plots-tbody');
-    fetch("/api" + window.location.pathname, {headers: {"accept": "application/json"}})
-        .then(response => response.json())
-        .then(data => data.forEach(
-            item => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td><a href="plots/${item.title}">${item.title}</a></td><td>${item.description}</td>`
-                tbody.appendChild(tr);
-            }
-        ))
+    data.forEach(
+        item => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td><a href="plots/${item.title}">${item.title}</a></td><td>${item.description}</td>`
+            tbody.appendChild(tr);
+        }
+    )
 </script>
 <a href="plots/new">New plot</a>
 <script src="/common/navbar.js"></script>
