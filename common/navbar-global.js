@@ -11,5 +11,11 @@ fetch("/api/signed-in-as")
             .then(response => response.text())
             .then(data => {
                 parent.innerHTML = data.replaceAll("{USERNAME}", username);
+                const listItems = parent.firstElementChild.firstElementChild.children
+                for (let item of listItems) {
+                    if (item.firstElementChild.href === window.location.href) {
+                        item.style.fontWeight = "bold";
+                    }
+                }
             });
     })
