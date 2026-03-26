@@ -1,7 +1,7 @@
 <nav id="navbar-user">
     <ul>
-        <li><a id="plot-anchor"><img alt="logo" src="">Plots</a></li>
-        <li><a id="profile-anchor">Profile</a></li>
+        <li><a href="/users/{USERNAME}/plots"><img alt="logo" src="">Plots</a></li>
+        <li><a href="/users/{USERNAME}">Profile</a></li>
         <li>
             <form>
                 <label for="search-user">Search</label>
@@ -10,7 +10,7 @@
             </form>
         </li>
         <li><a href="/announcements">Announcements</a></li>
-        <li><span id="username-container"></span></li>
+        <li><span>{USERNAME}</span></li>
         <li><a href="/settings">Settings</a></li>
         <li>
             <form action="/api/sign-out" method="post">

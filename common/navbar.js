@@ -10,11 +10,6 @@ fetch("/api/signed-in-as")
         fetch(navbarPath)
             .then(response => response.text())
             .then(data => {
-                parent.innerHTML = data;
-                if (username) {
-                    document.getElementById("plot-anchor").href = `/users/${username}/plots`
-                    document.getElementById("profile-anchor").href = `/users/${username}`
-                    document.getElementById("username-container").innerText = username
-                }
+                parent.innerHTML = data.replaceAll("{USERNAME}", username);
             });
     })

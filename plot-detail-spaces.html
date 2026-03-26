@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="/common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-container"></div>
+<h1>Title</h1>
+<ul>
+    <li>summary</li>
+    <li><a href=""></a></li>
+    <li><a href=""></a></li>
+    <li><a href=""></a></li>
+</ul>
+<h2>Spaces</h2>
+<h3>List</h3>
+<ul id="spaces-ul"></ul>
+<h3>With Time</h3>
+<div id="spaces-with-time-container"></div>
+<h3>Map</h3>
+<div id="spaces-map-container"></div>
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+
+    const data = await fetchJsonOfPathnameApi();
+    const spaces_ul = document.getElementById("spaces-ul");
+    for (let item of data) {
+        const li = document.createElement("li");
+
+        const input = document.createElement("input");
+        input.value = item.name;
+        input.disabled = true;
+        li.appendChild(input);
+
+        const editButton = document.createElement("button")
+        editButton.innerText = "Edit";
+        li.appendChild(editButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Delete";
+        li.appendChild(deleteButton);
+
+        const submitButton = document.createElement("button");
+        submitButton.innerText = "Submit";
+        submitButton.style.display = "none";
+        li.appendChild(submitButton);
+
+        editButton.onclick = function () {
+            input.disabled = false;
+            input.focus();
+            editButton.style.display = "none";
+            deleteButton.style.display = "none";
+            submitButton.style.display = "";
+        };
+
+        deleteButton.onclick = (() => li.remove());
+
+        submitButton.onclick = function () {
+            input.disabled = true;
+            // TODO
+            submitButton.style.display = "none";
+            editButton.style.display = "";
+            deleteButton.style.display = "";
+        };
+
+        spaces_ul.appendChild(li);
+    }
+</script>
+<script src="/common/navbar.js"></script>
+</body>
+</html>
