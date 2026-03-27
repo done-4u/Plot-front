@@ -9,18 +9,18 @@
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2>Spaces</h2>
+<h2>Places</h2>
 <h3>List</h3>
-<ul id="spaces-ul"></ul>
+<ul id="places-ul"></ul>
 <h3>With Time</h3>
-<div id="spaces-with-time-container"></div>
+<div id="places-with-time-container"></div>
 <h3>Map</h3>
-<div id="spaces-map-container"></div>
+<div id="places-map-container"></div>
 <script type="module">
     import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
-    const spaces_ul = document.getElementById("spaces-ul");
+    const places_ul = document.getElementById("places-ul");
     for (let item of data) {
         const li = document.createElement("li");
 
@@ -60,7 +60,7 @@
             deleteButton.style.display = "";
         };
 
-        spaces_ul.appendChild(li);
+        places_ul.appendChild(li);
     }
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
