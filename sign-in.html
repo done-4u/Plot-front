@@ -8,7 +8,7 @@
 <body>
 <div id="navbar-global-container"></div>
 <h1>Sign in</h1>
-<form action="/api/sign-in" method="post">
+<form id="sign-in-form" action="/api/sign-in" method="post">
     <div>
         <label for="username">Username</label>
         <input id="username" name="username" required>
@@ -17,12 +17,29 @@
         <label for="password">Password</label>
         <input id="password" name="password" required type="password">
     </div>
-    <button type="submit">Submit</button>
+    <button id="sign-in-button" type="button">Submit</button>
 </form>
 <div>
     <a href="/sign-up">Sign up</a>
     <a href="#">Forgot your Username/Password?</a>
 </div>
+<script type="module">
+    import {fetchUsername} from "/common/utils.js";
+
+    async function signIn() {
+        const formData = new FormData(document.getElementById("sign-in-form"));
+        const signInResponse = await fetch("/api/sign-in", {method: "POST", body: formData});
+        if (signInResponse.ok) {
+            const username = await fetchUsername()
+            window.location.href = `/users/${username}/plots`;
+        } else {
+            alert("Incorrect username/password.")
+        }
+    }
+
+    const signInButton = document.getElementById("sign-in-button");
+    signInButton.addEventListener("click", signIn);
+</script>
 <script src="/common/ui-notifier.js"></script>
 <script src="/common/navbar-global.js" type="module"></script>
 </body>

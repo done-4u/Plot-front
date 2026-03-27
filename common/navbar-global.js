@@ -9,7 +9,23 @@ const parent = document.getElementById("navbar-global-container");
 const navbarPath = username ? "/common/_navbar-user.html" : "/common/_navbar-guest.html";
 
 const navbarText = await fetchText(navbarPath);
-parent.innerHTML = navbarText.replaceAll("{USERNAME}", username);
+if (username) {
+    parent.innerHTML = navbarText.replaceAll("{USERNAME}", username);
+    const signOutButton = document.getElementById("sign-out-button")
+
+    async function signOut() {
+        const signInResponse = await fetch("/api/sign-out", {method: "POST"});
+        if (signInResponse.ok) {
+            window.location.href = "/index";
+        } else {
+            alert("Something went wrong.");
+        }
+    }
+    signOutButton.addEventListener("click", signOut)
+} else {
+    parent.innerHTML = navbarText;
+}
+
 const listItems = parent.firstElementChild.firstElementChild.children
 for (let item of listItems) {
     if (item.firstElementChild.href === window.location.href) {
