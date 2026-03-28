@@ -21,6 +21,7 @@ if (username) {
             alert("Something went wrong.");
         }
     }
+
     signOutButton.addEventListener("click", signOut)
 } else {
     parent.innerHTML = navbarText;

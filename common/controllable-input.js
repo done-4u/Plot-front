@@ -3,9 +3,8 @@ class ControllableInput extends HTMLElement {
         super();
     }
 
-    connectedCallback() {
-        this.render();
-        this.setupListeners();
+    static get observedAttributes() {
+        return ["value"];
     }
 
     get value() {
@@ -21,8 +20,9 @@ class ControllableInput extends HTMLElement {
         }
     }
 
-    static get observedAttributes() {
-        return ["value"];
+    connectedCallback() {
+        this.render();
+        this.setupListeners();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

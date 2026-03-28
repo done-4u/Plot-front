@@ -17,49 +17,18 @@
 <h3>Map</h3>
 <div id="places-map-container"></div>
 <script type="module">
-    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, lowerHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const places_ul = document.getElementById("places-ul");
     for (let item of data) {
+        const name = item.name;
         const li = document.createElement("li");
+        const a = document.createElement("a");
 
-        const input = document.createElement("input");
-        input.value = item.name;
-        input.disabled = true;
-        li.appendChild(input);
-
-        const editButton = document.createElement("button")
-        editButton.innerText = "Edit";
-        li.appendChild(editButton);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.innerText = "Delete";
-        li.appendChild(deleteButton);
-
-        const submitButton = document.createElement("button");
-        submitButton.innerText = "Submit";
-        submitButton.style.display = "none";
-        li.appendChild(submitButton);
-
-        editButton.onclick = function () {
-            input.disabled = false;
-            input.focus();
-            editButton.style.display = "none";
-            deleteButton.style.display = "none";
-            submitButton.style.display = "";
-        };
-
-        deleteButton.onclick = (() => li.remove());
-
-        submitButton.onclick = function () {
-            input.disabled = true;
-            // TODO
-            submitButton.style.display = "none";
-            editButton.style.display = "";
-            deleteButton.style.display = "";
-        };
-
+        li.appendChild(a);
+        a.innerText = name;
+        a.href = lowerHref(name);
         places_ul.appendChild(li);
     }
 </script>

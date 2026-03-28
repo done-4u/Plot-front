@@ -24,14 +24,12 @@
 
     const data = await fetchJsonOfPathnameApi();
     const tbody = document.getElementById('plots-tbody');
-    data.forEach(
-        item => {
-            const tr = document.createElement("tr");
-            const href = lowerHref(item.title);
-            tr.innerHTML = `<td><a href="${href}">${item.title}</a></td><td>${item.description}</td>`
-            tbody.appendChild(tr);
-        }
-    )
+    for (let item of data) {
+        const tr = document.createElement("tr");
+        const href = lowerHref(item.title);
+        tr.innerHTML = `<td><a href="${href}">${item.title}</a></td><td>${item.description}</td>`
+        tbody.appendChild(tr);
+    }
 </script>
 <a href="plots/new">New plot</a>
 <script src="/common/navbar-global.js" type="module"></script>
