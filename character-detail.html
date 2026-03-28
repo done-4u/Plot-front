@@ -9,16 +9,53 @@
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2><span id="name-container"></span></h2>
-<span id="description-container"></span>
+<h2>Name</h2>
+<label for="name-input"></label><input id="name-input" disabled>
+<button id="name-edit-button">Edit</button>
+<button id="name-submit-button" style="display: none;">Submit</button>
+<h2>Description</h2>
+<label for="description-input"></label><input id="description-input" disabled>
+<button id="description-edit-button">Edit</button>
+<button id="description-submit-button" style="display: none;">Submit</button>
 <script type="module">
     import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
-    const name_container = document.getElementById("name-container");
-    const description_container = document.getElementById("description-container");
-    name_container.innerText = data.name;
-    description_container.innerText = data.description;
+    const name_input = document.getElementById("name-input");
+    const description_input = document.getElementById("description-input");
+    name_input.value = data.name;
+    description_input.value = data.description;
+
+    const name_edit_button = document.getElementById("name-edit-button");
+    const name_submit_button = document.getElementById("name-submit-button");
+    const description_edit_button = document.getElementById("description-edit-button");
+    const description_submit_button = document.getElementById("description-submit-button");
+
+    name_edit_button.addEventListener("click", async () => {
+        // TODO: add API
+        name_input.disabled = false;
+        name_edit_button.style.display = "none";
+        name_submit_button.style.display = "";
+    });
+
+    name_submit_button.addEventListener("click", async () => {
+        name_input.disabled = true;
+        name_edit_button.style.display = "";
+        name_submit_button.style.display = "none";
+    });
+
+    description_edit_button.addEventListener("click", async () => {
+        // TODO: add API
+        description_input.disabled = false;
+        description_edit_button.style.display = "none";
+        description_submit_button.style.display = "";
+    });
+
+    description_submit_button.addEventListener("click", async () => {
+        description_input.disabled = true;
+        description_edit_button.style.display = "";
+        description_submit_button.style.display = "none";
+    });
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
