@@ -8,7 +8,7 @@
 <body>
 <div id="navbar-global-container"></div>
 <h1>Sign up</h1>
-<form action="/api/sign-up" method="post">
+<form id="sign-up-form" action="/api/sign-up" method="post">
     <fieldset>
         <div>
             <label for="username">Username</label>
@@ -36,6 +36,19 @@
     </fieldset>
     <button type="submit">Submit</button>
 </form>
+<script type="module">
+    const signUpForm = document.getElementById("sign-up-form");
+    signUpForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget);
+        const signUpResponse = await fetch(e.currentTarget.action, {method: "POST", body: formData});
+        if (signUpResponse.ok) {
+            window.location.href = "/sign-in";
+        } else {
+            alert("Unable to sign up.")
+        }
+    })
+</script>
 <script src="/common/navbar-global.js" type="module"></script>
 </body>
 </html>

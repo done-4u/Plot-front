@@ -8,7 +8,7 @@
 <body>
 <div id="navbar-global-container"></div>
 <h1>New Plot</h1>
-<form action="/api/plot-new" method="post">
+<form id="plot-new-form" action="/api/users/{USERNAME}/plots" method="post">
     <fieldset>
         <legend>Basic Information</legend>
         <div>
@@ -31,6 +31,25 @@
     </fieldset>
     <button type="submit">Submit</button>
 </form>
+<script type="module">
+    import {fetchUsername} from "/common/utils.js";
+
+    const plotNewForm = document.getElementById("plot-new-form");
+    plotNewForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget);
+        const username = await fetchUsername()
+        const plotNewResponse = await fetch(e.currentTarget.action.replace("{USERNAME}", "username"), {
+            method: "POST",
+            body: formData
+        });
+        if (plotNewResponse.ok) {
+            window.location.href = `/users/${username}/plots`;
+        } else {
+            alert("Unable to create a new plot.")
+        }
+    })
+</script>
 <script src="/common/navbar-global.js" type="module"></script>
 </body>
 </html>

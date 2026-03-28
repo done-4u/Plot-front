@@ -17,7 +17,7 @@
         <label for="password">Password</label>
         <input id="password" name="password" required type="password">
     </div>
-    <button id="sign-in-button" type="button">Submit</button>
+    <button type="submit">Submit</button>
 </form>
 <div>
     <a href="/sign-up">Sign up</a>
@@ -26,19 +26,18 @@
 <script type="module">
     import {fetchUsername} from "/common/utils.js";
 
-    async function signIn() {
-        const formData = new FormData(document.getElementById("sign-in-form"));
-        const signInResponse = await fetch("/api/sign-in", {method: "POST", body: formData});
+    const signInForm = document.getElementById("sign-in-form");
+    signInForm.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget);
+        const signInResponse = await fetch(e.currentTarget.action, {method: "POST", body: formData});
         if (signInResponse.ok) {
             const username = await fetchUsername()
             window.location.href = `/users/${username}/plots`;
         } else {
-            alert("Incorrect username/password.")
+            alert("Unable to sign in.")
         }
-    }
-
-    const signInButton = document.getElementById("sign-in-button");
-    signInButton.addEventListener("click", signIn);
+    })
 </script>
 <script src="/common/ui-notifier.js"></script>
 <script src="/common/navbar-global.js" type="module"></script>
