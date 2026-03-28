@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="/common/style.css" rel="stylesheet">
+</head>
+<body>
+<script defer src="/common/controllable-input.js"></script>
+<div id="navbar-global-container"></div>
+<h1>Title</h1>
+<div id="navbar-plot-container"></div>
+<h2>Name</h2>
+<controllable-input id="name-input"></controllable-input>
+<h2>Description</h2>
+<controllable-input id="description-input"></controllable-input>
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+
+    // TODO: add API
+    const data = await fetchJsonOfPathnameApi();
+    const name_input = document.getElementById("name-input");
+    const description_input = document.getElementById("description-input");
+    name_input.value = data.name;
+    description_input.value = data.description;
+</script>
+<script src="/common/navbar-global.js" type="module"></script>
+<script src="/common/navbar-plot.js" type="module"></script>
+</body>
+</html>
