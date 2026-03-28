@@ -14,7 +14,7 @@
 <ul id="characters-ul"></ul>
 <h3>Relationship</h3>
 <script type="module">
-    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, lowerHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const characters_ul = document.getElementById("characters-ul");
@@ -25,7 +25,7 @@
 
         li.appendChild(a)
         a.innerText = name;
-        a.href = window.location.pathname + "/" + name
+        a.href = lowerHref(name);
         characters_ul.appendChild(li)
     }
 </script>

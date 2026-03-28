@@ -14,5 +14,9 @@ export async function fetchText(url) {
 
 export async function fetchUsername() {
     const usernameJson = await fetchJson("/api/signed-in-as");
-    return usernameJson.username
+    return usernameJson.username;
+}
+
+export function lowerHref(lower) {
+    return window.location.pathname + "/" + lower;
 }
