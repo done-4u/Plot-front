@@ -9,59 +9,36 @@
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2>Places</h2>
-<h3>List</h3>
-<ul id="places-ul"></ul>
-<h3>With Time</h3>
-<div id="places-with-time-container"></div>
-<h3>Map</h3>
-<div id="places-map-container"></div>
+<h2>Events</h2>
+<table id="events-table"></table>
 <script type="module">
-    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+    import {fetchJson} from "/common/utils.js";
 
-    const data = await fetchJsonOfPathnameApi();
-    const places_ul = document.getElementById("places-ul");
-    for (let item of data) {
-        const li = document.createElement("li");
+    const apiPath = "/api" + window.location.pathname;
+    const eventsPromise = fetchJson(apiPath);
+    const timesPromise = fetchJson(apiPath.replace(/events(?!.*events)/, "times"))
+    const placesPromise = fetchJson(apiPath.replace(/events(?!.*events)/, "places"));
 
-        const input = document.createElement("input");
-        input.value = item.name;
-        input.disabled = true;
-        li.appendChild(input);
+    const events = await eventsPromise;
+    const times = await timesPromise;
+    const places = await placesPromise;
 
-        const editButton = document.createElement("button")
-        editButton.innerText = "Edit";
-        li.appendChild(editButton);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.innerText = "Delete";
-        li.appendChild(deleteButton);
-
-        const submitButton = document.createElement("button");
-        submitButton.innerText = "Submit";
-        submitButton.style.display = "none";
-        li.appendChild(submitButton);
-
-        editButton.onclick = function () {
-            input.disabled = false;
-            input.focus();
-            editButton.style.display = "none";
-            deleteButton.style.display = "none";
-            submitButton.style.display = "";
-        };
-
-        deleteButton.onclick = (() => li.remove());
-
-        submitButton.onclick = function () {
-            input.disabled = true;
-            // TODO
-            submitButton.style.display = "none";
-            editButton.style.display = "";
-            deleteButton.style.display = "";
-        };
-
-        places_ul.appendChild(li);
+    let html = "<tr><th>Times\\Places</th>";
+    for (let place of places) {
+        html += `<th class="table-place-header">${place.name}</th>`;
     }
+    html += "</tr>";
+    for (let time of times) {
+        html += "<tr>";
+        html += `<th class="table-time-header">${time.order}</th>`;
+        for (let place of places) {
+            html += `<td data-timeOrder="${time.order}" data-placeName="${time.name}" contenteditable="true"></td>`;
+        }
+        html += "</tr>";
+    }
+
+    const table = document.getElementById("events-table");
+    table.innerHTML = html;
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
