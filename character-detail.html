@@ -9,25 +9,16 @@
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2>Characters</h2>
-<h3>List</h3>
-<ul id="characters-ul"></ul>
-<h3>Relationship</h3>
+<h2><span id="name-container"></span></h2>
+<span id="description-container"></span>
 <script type="module">
     import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
-    const characters_ul = document.getElementById("characters-ul");
-    for (let item of data) {
-        const name = item.name;
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-
-        li.appendChild(a)
-        a.innerText = name;
-        a.href = window.location.pathname + "/" + name
-        characters_ul.appendChild(li)
-    }
+    const name_container = document.getElementById("name-container");
+    const description_container = document.getElementById("description-container");
+    name_container.innerText = data.name;
+    description_container.innerText = data.description;
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
