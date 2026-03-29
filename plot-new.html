@@ -38,8 +38,9 @@
     plotNewForm.addEventListener("submit", async (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget);
+        const action = e.currentTarget.getAttribute("action");
         const username = await fetchUsername()
-        const plotNewResponse = await fetch(e.currentTarget.action.replace("{USERNAME}", "username"), {
+        const plotNewResponse = await fetch(action.replace("{USERNAME}", username), {
             method: "POST",
             body: formData
         });
