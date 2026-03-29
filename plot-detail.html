@@ -6,33 +6,23 @@
     <link href="/common/style.css" rel="stylesheet">
 </head>
 <body>
+<script defer src="/common/controllable-input.js"></script>
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2>Summary</h2>
-<h3>Backgrounds</h3>
-<h4>Times</h4>
-<div id="times-container"></div>
-<h4>Places</h4>
-<div id="places-container"></div>
-<h3>Characters</h3>
-<div id="characters-container"></div>
-<h3>Events</h3>
-<div id="events-container"></div>
+<h2>Title</h2>
+<controllable-input id="title-input"></controllable-input>
+<h2>Description</h2>
+<controllable-input id="description-input"></controllable-input>
 <script type="module">
     import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
-    const timesData = await fetchJsonOfPathnameApi();
-    const times_container = document.getElementById("times-container");
-    times_container.innerText = timesData.map(item => item.id).join(" ");
-
-    const placesData = await fetchJsonOfPathnameApi();
-    const places_container = document.getElementById("places-container");
-    places_container.innerText = placesData.map(item => item.id).join(" ");
-
-    const charactersData = await fetchJsonOfPathnameApi();
-    const characters_container = document.getElementById("characters-container");
-    characters_container.innerText = charactersData.map(item => item.id).join(" ");
+    // TODO: add API
+    const data = await fetchJsonOfPathnameApi();
+    const title_input = document.getElementById("title-input");
+    const description_input = document.getElementById("description-input");
+    title_input.value = data.title;
+    description_input.value = data.description;
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
