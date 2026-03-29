@@ -1,15 +1,13 @@
-import {fetchText, fetchUsername} from "./utils.js";
-
-const usernameJson = await fetchUsername()
-const username = usernameJson
+import {fetchSignedIn, fetchText, fetchUsername} from "./utils.js";
 
 // (probably) navbar is anywhere, so parent is defined
 const parent = document.getElementById("navbar-global-container");
-// API: the username is empty string("") if not signed in
-const navbarPath = username ? "/common/_navbar-user.html" : "/common/_navbar-guest.html";
+const isSignedIn = await fetchSignedIn();
 
-const navbarText = await fetchText(navbarPath);
-if (username) {
+if (isSignedIn) {
+    const username = await fetchUsername()
+    const navbarText = await fetchText("/common/_navbar-user.html");
+
     parent.innerHTML = navbarText.replaceAll("{USERNAME}", username);
     const signOutButton = document.getElementById("sign-out-button")
 
@@ -24,8 +22,10 @@ if (username) {
 
     signOutButton.addEventListener("click", signOut)
 } else {
+    const navbarText = await fetchText("/common/_navbar-guest.html")
     parent.innerHTML = navbarText;
 }
+
 
 const listItems = parent.firstElementChild.firstElementChild.children
 for (let item of listItems) {

@@ -12,6 +12,11 @@ export async function fetchText(url) {
     return response.text();
 }
 
+export async function fetchSignedIn() {
+    const text = await fetchText("/api/is-signed-in");
+    return text === "true";
+}
+
 export async function fetchUsername() {
     const usernameJson = await fetchJson("/api/signed-in-as");
     return usernameJson.username;
