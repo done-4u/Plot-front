@@ -12,8 +12,12 @@
 <h2>Places</h2>
 <h3>List</h3>
 <ul id="places-ul"></ul>
-<h3>With Time</h3>
-<div id="places-with-time-container"></div>
+<button id="place-add-button" type="button">Add place</button>
+<form id="place-add-form" style="display: none;">
+    <label for="name">Name</label><input id="name" name="name" required/>
+    <label for="description">Description</label><input id="description" name="description"/>
+    <button type="submit">Submit</button>
+</form>
 <h3>Map</h3>
 <div id="places-map-container"></div>
 <script type="module">
@@ -31,6 +35,26 @@
         a.href = lowerHref(name);
         places_ul.appendChild(li);
     }
+
+    const place_add_button = document.getElementById("place-add-button");
+    const place_add_form = document.getElementById("place-add-form");
+    place_add_button.addEventListener("click", () => {
+        place_add_form.style.display = "";
+    });
+
+    place_add_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const plotNewResponse = await fetch("/api" + window.location.pathname, {
+            method: "POST",
+            body: formData
+        });
+        if (plotNewResponse.ok) {
+            window.location.reload();
+        } else {
+            alert("Unable to create a new place.")
+        }
+    })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
