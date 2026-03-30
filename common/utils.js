@@ -22,6 +22,12 @@ export async function fetchUsername() {
     return usernameJson.username;
 }
 
+export function upperHref() {
+    const parts = window.location.pathname.split("/")
+    parts.pop();
+    return parts.join("/");
+}
+
 export function lowerHref(lower) {
     return window.location.pathname + "/" + lower;
 }

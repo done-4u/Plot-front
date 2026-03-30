@@ -16,9 +16,9 @@
 <h2>Description</h2>
 <controllable-input id="description-input"></controllable-input>
 <h2>Delete</h2>
-<confirm-button message="Are you sure to delete this place?">Delete</confirm-button>
+<confirm-button id="delete-button" message="Are you sure to delete this place?">Delete</confirm-button>
 <script type="module">
-    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
 
     // TODO: add API
     const data = await fetchJsonOfPathnameApi();
@@ -26,6 +26,16 @@
     const description_input = document.getElementById("description-input");
     name_input.value = data.name;
     description_input.value = data.description;
+
+    const delete_button = document.getElementById("delete-button");
+    delete_button.addEventListener("click", async () => {
+        const response = await fetch("/api" + window.location.pathname, {method: "DELETE"});
+        if (response.ok) {
+            window.location.pathname = upperHref()
+        } else {
+            alert("Unable to delete this place.");
+        }
+    })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
