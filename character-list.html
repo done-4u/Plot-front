@@ -6,12 +6,20 @@
     <link href="/common/style.css" rel="stylesheet">
 </head>
 <body>
+<script defer src="/common/toggle-div.js"></script>
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
 <h2>Characters</h2>
 <h3>List</h3>
 <ul id="characters-ul"></ul>
+<toggle-div button-text="Add character">
+    <form id="character-add-form">
+        <label for="name">Name</label><input id="name" name="name" required/>
+        <label for="description">Description</label><input id="description" name="description"/>
+        <button type="submit">Submit</button>
+    </form>
+</toggle-div>
 <h3>Relationship</h3>
 <script type="module">
     import {fetchJsonOfPathnameApi, lowerHref} from "/common/utils.js";
@@ -28,6 +36,21 @@
         a.href = lowerHref(name);
         characters_ul.appendChild(li)
     }
+
+    const character_add_form = document.getElementById("character-add-form");
+    character_add_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const response = await fetch("/api" + window.location.pathname, {
+            method: "POST",
+            body: formData
+        });
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert("Unable to create a new character.")
+        }
+    })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>

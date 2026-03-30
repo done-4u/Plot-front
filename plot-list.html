@@ -6,6 +6,7 @@
     <link href="/common/style.css" rel="stylesheet">
 </head>
 <body>
+<script defer src="/common/toggle-div.js"></script>
 <div id="navbar-global-container"></div>
 <h1>Plots</h1>
 <table>
@@ -31,37 +32,33 @@
         tbody.appendChild(tr);
     }
 </script>
-<button id="plot-add-button" type="button">Add plot</button>
-<form id="plot-add-form" style="display: none;">
-    <fieldset>
-        <legend>Basic Information</legend>
-        <label for="title">Title</label><input id="title" name="title" required/>
-        <label for="description">Description</label><input id="description" name="description"/>
-    </fieldset>
-    <fieldset>
-        <legend>Privacy</legend>
-        <label for="public">Public</label>
-        <input id="public" name="access" required type="radio" value="public">
-        <label for="private">Private</label>
-        <input id="private" name="access" type="radio" value="private">
-    </fieldset>
-    <button type="submit">Submit</button>
-</form>
+<toggle-div button-text="Add plot">
+    <form id="plot-add-form">
+        <fieldset>
+            <legend>Basic Information</legend>
+            <label for="title">Title</label><input id="title" name="title" required/>
+            <label for="description">Description</label><input id="description" name="description"/>
+        </fieldset>
+        <fieldset>
+            <legend>Privacy</legend>
+            <label for="public">Public</label>
+            <input id="public" name="access" required type="radio" value="public">
+            <label for="private">Private</label>
+            <input id="private" name="access" type="radio" value="private">
+        </fieldset>
+        <button type="submit">Submit</button>
+    </form>
+</toggle-div>
 <script type="module">
-    const plot_add_button = document.getElementById("plot-add-button");
     const plot_add_form = document.getElementById("plot-add-form");
-    plot_add_button.addEventListener("click", () => {
-        plot_add_form.style.display = "";
-    });
-
     plot_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const plotNewResponse = await fetch("/api" + window.location.pathname, {
+        const response = await fetch("/api" + window.location.pathname, {
             method: "POST",
             body: formData
         });
-        if (plotNewResponse.ok) {
+        if (response.ok) {
             window.location.reload();
         } else {
             alert("Unable to create a new plot.")
