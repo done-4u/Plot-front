@@ -13,7 +13,7 @@ class ControllableInput extends HTMLElement {
     }
 
     set value(newValue) {
-        this.setAttribute('value', newValue);
+        this.setAttribute("value", newValue);
         const input = this.getElementsByTagName("input")[0];
         if (input) {
             input.value = newValue;
@@ -26,7 +26,7 @@ class ControllableInput extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        const input = this.querySelector('input');
+        const input = this.querySelector("input");
         if (input && name === "value") {
             input.value = newValue;
         }
