@@ -35,6 +35,34 @@
             alert("Unable to delete this plot.");
         }
     })
+
+    title_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const response = await fetch("/api" + window.location.pathname, {
+            method: "PATCH",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"title": title_form.innerValue})
+        });
+        if (response.ok) {
+            window.location.href = upperHref();
+        } else {
+            alert("Unable to change the plot title.");
+        }
+    });
+
+    description_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const response = await fetch("/api" + window.location.pathname, {
+            method: "PATCH",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({"description": description_form.innerValue})
+        });
+        if (response.ok) {
+            window.location.href = upperHref();
+        } else {
+            alert("Unable to change the plot description.");
+        }
+    });
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
