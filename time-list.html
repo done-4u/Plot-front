@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plot, your story</title>
+    <link href="/common/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar-global-container"></div>
+<h1>Title</h1>
+<div id="navbar-plot-container"></div>
+<h2>Times</h2>
+<ol id="times-ol">
+    <!-- Will be filled by JS -->
+</ol>
+<script type="module">
+    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+
+    const data = await fetchJsonOfPathnameApi();
+    const times_ol = document.getElementById("times-ol");
+    for (let item of data) {
+        // const order = item.order;
+        const description = item.description;
+        const li = document.createElement("li");
+        li.innerText = description;
+        times_ol.appendChild(li);
+    }
+</script>
+<script src="/common/navbar-global.js" type="module"></script>
+<script src="/common/navbar-plot.js" type="module"></script>
+</body>
+</html>
