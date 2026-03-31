@@ -29,10 +29,14 @@
     }
     html += "</tr>";
     for (let time of times) {
+        console.log(time)
+        if (time.order == 0) {
+            continue;
+        }
         html += "<tr>";
         html += `<th class="table-time-header">${time.order}</th>`;
         for (let place of places) {
-            html += `<td data-timeOrder="${time.order}" data-placeName="${time.name}" contenteditable="true"></td>`;
+            html += `<td data-timeOrder="${time.order}" data-placeName="${place.name}" contenteditable="true"></td>`;
         }
         html += "</tr>";
     }
