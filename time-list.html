@@ -10,21 +10,40 @@
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
 <h2>Times</h2>
-<ol id="times-ol">
+<ul id="times-ol">
     <!-- Will be filled by JS -->
-</ol>
+</ul>
+<button id="time-add-button">Add time</button>
 <script type="module">
     import {fetchJsonOfPathnameApi} from "/common/utils.js";
 
-    const data = await fetchJsonOfPathnameApi();
-    const times_ol = document.getElementById("times-ol");
-    for (let item of data) {
-        // const order = item.order;
-        const description = item.description;
-        const li = document.createElement("li");
-        li.innerText = description;
-        times_ol.appendChild(li);
+    async function fetchAndRender() {
+        const data = await fetchJsonOfPathnameApi();
+        const times_ol = document.getElementById("times-ol");
+        times_ol.replaceChildren();
+        for (let item of data) {
+            const order = item.order;
+            const description = item.description;
+            const li = document.createElement("li");
+            li.innerText = `${order}. ${description}`;
+            times_ol.appendChild(li);
+        }
     }
+
+    const time_add_button = document.getElementById("time-add-button");
+    time_add_button.addEventListener("click", async () => {
+        const response = await fetch("/api" + window.location.pathname, {
+            method: "POST",
+            body: {}
+        });
+        if (response.ok) {
+            await fetchAndRender();
+        } else {
+            alert("Unable to create a new time.")
+        }
+    })
+
+    fetchAndRender();
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
