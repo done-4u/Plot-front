@@ -10,39 +10,109 @@
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
 <h2>Events</h2>
-<table id="events-table"></table>
+<table id="events-table">
+    <!-- will be filled by JS -->
+</table>
+<form id="event-add-form" style="display: none;">
+    <div>
+        <label for="event-add-form-time">Time</label><input id="event-add-form-time" name="timeOrder" readonly/>
+        <label for="event-add-form-place">Place</label><input id="event-add-form-place" name="placeName" readonly/>
+    </div>
+    <div><label for="event-add-form-input">Description</label><input id="event-add-form-input" name="description"/></div>
+    <button id="event-add-form-button" type="submit">Submit</button>
+</form>
 <script type="module">
     import {fetchJson} from "/common/utils.js";
 
     const apiPath = "/api" + window.location.pathname;
-    const eventsPromise = fetchJson(apiPath);
-    const timesPromise = fetchJson(apiPath.replace(/events(?!.*events)/, "times"))
-    const placesPromise = fetchJson(apiPath.replace(/events(?!.*events)/, "places"));
+    const events = await fetchJson(apiPath);
+    const times = await fetchJson(apiPath.replace(/events(?!.*events)/, "times"))
+    const places = await fetchJson(apiPath.replace(/events(?!.*events)/, "places"));
 
-    const events = await eventsPromise;
-    const times = await timesPromise;
-    const places = await placesPromise;
-
-    let html = "<tr><th>Times\\Places</th>";
-    for (let place of places) {
-        html += `<th class="table-place-header">${place.name}</th>`;
+    // convert event list to map
+    const eventMap = new Map();
+    for (let event of events) {
+        const key = event.timeOrder;
+        let placeMap;
+        if (eventMap.has(key)) {
+            placeMap = eventMap.get(key);
+        } else {
+            placeMap = new Map();
+        }
+        placeMap.set(event.placeName, event.description)
+        eventMap.set(key, placeMap)
     }
-    html += "</tr>";
+
+    // first row
+    const events_table = document.getElementById("events-table");
+    let tr = document.createElement("tr");
+    let th = document.createElement("th");
+    th.innerText = "Times\\Places";
+    tr.appendChild(th);
+    for (let place of places) {
+        th = document.createElement("th");
+        th.innerText = place.name;
+        tr.appendChild(th);
+    }
+    events_table.appendChild(tr);
+
+    const event_add_form = document.getElementById("event-add-form");
+    const event_add_form_time = document.getElementById("event-add-form-time");
+    const event_add_form_place = document.getElementById("event-add-form-place");
+    let activeCell = null;
     for (let time of times) {
-        console.log(time)
         if (time.order == 0) {
             continue;
         }
-        html += "<tr>";
-        html += `<th class="table-time-header">${time.order}</th>`;
+
+        // first column
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.innerText = time.order;
+        tr.appendChild(th);
+
+        // actual table body
         for (let place of places) {
-            html += `<td data-timeOrder="${time.order}" data-placeName="${place.name}" contenteditable="true"></td>`;
+            const td = document.createElement("td");
+            td.setAttribute("timeOrder", time.order);
+            td.setAttribute("placeName", place.name);
+
+            // event link or event add form
+            if (eventMap.get(time.order)?.get(place.name)) {
+                const a = document.createElement("a");
+                a.href = `${window.location.pathname}/${time.order}/${place.name}`;
+                a.innerText = "O"
+                td.appendChild(a);
+            } else {
+                td.addEventListener("click", () => {
+                    if (activeCell != null) {
+                        activeCell.classList.remove("active")
+                    }
+                    activeCell = td;
+                    td.classList.add("active");
+                    event_add_form.style.display = "";
+                    event_add_form_time.value = time.order
+                    event_add_form_place.value = place.name;
+                })
+            }
+
+            tr.appendChild(td);
         }
-        html += "</tr>";
+        events_table.appendChild(tr)
     }
 
-    const table = document.getElementById("events-table");
-    table.innerHTML = html;
+    event_add_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+        const response = await fetch("/api" + window.location.pathname, {method: "POST", body: formData})
+
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert("Unable to add the event.")
+        }
+    });
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>

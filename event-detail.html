@@ -11,8 +11,9 @@
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
-<h2>Name</h2>
-<controllable-form id="name-form" inner-required></controllable-form>
+<h2>Time & Place</h2>
+<label for="time-input"></label><input id="time-input" disabled/>
+<label for="place-input"></label><input id="place-input" disabled/>
 <h2>Description</h2>
 <controllable-form id="description-form"></controllable-form>
 <h2>Delete</h2>
@@ -21,9 +22,11 @@
     import {fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
-    const name_form = document.getElementById("name-form");
+    const time_input = document.getElementById("time-input");
+    const place_input = document.getElementById("place-input");
     const description_form = document.getElementById("description-form");
-    name_form.innerValue = data.name;
+    time_input.value = data.timeOrder;
+    place_input.value = data.placeName;
     description_form.innerValue = data.description;
 
     const delete_button = document.getElementById("delete-button");
@@ -32,21 +35,7 @@
         if (response.ok) {
             window.location.pathname = upperHref()
         } else {
-            alert("Unable to delete this character.");
-        }
-    });
-
-    name_form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const response = await fetch("/api" + window.location.pathname, {
-            method: "PATCH",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({"name": name_form.innerValue})
-        });
-        if (response.ok) {
-            window.location.href = upperHref();
-        } else {
-            alert("Unable to change the character name.");
+            alert("Unable to delete this event.");
         }
     });
 
@@ -58,9 +47,12 @@
             body: JSON.stringify({"description": description_form.innerValue})
         });
         if (response.ok) {
-            window.location.href = upperHref();
+            const pieces = window.location.pathname.split("/")
+            pieces.pop();
+            pieces.pop();
+            window.location.href = pieces.join("/");
         } else {
-            alert("Unable to change the character description.");
+            alert("Unable to change the event description.");
         }
     });
 </script>
