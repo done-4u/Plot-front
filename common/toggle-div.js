@@ -1,11 +1,11 @@
 class ToggleDiv extends HTMLElement {
-    static get observedAttributes() {
-        return ["button-text"];
-    }
-
     constructor() {
         super();
         this.isOpen = false;
+    }
+
+    static get observedAttributes() {
+        return ["button-text"];
     }
 
     connectedCallback() {
