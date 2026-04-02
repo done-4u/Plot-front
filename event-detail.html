@@ -47,10 +47,7 @@
             body: JSON.stringify({"description": description_form.innerValue})
         });
         if (response.ok) {
-            const pieces = window.location.pathname.split("/")
-            pieces.pop();
-            pieces.pop();
-            window.location.href = pieces.join("/");
+            window.location.reload();
         } else {
             alert("Unable to change the event description.");
         }
