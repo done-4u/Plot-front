@@ -22,7 +22,7 @@
     const data = await fetchJsonOfPathnameApi();
     const name_form = document.getElementById("name-form");
     const description_form = document.getElementById("description-form");
-    name_form.innerValue = data.name;
+    name_form.innerValue = data.placeName;
     description_form.innerValue = data.description;
 
     const delete_button = document.getElementById("delete-button");

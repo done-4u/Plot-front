@@ -17,7 +17,7 @@
     <form id="place-add-form">
         <label>
             Name
-            <input name="name" required/>
+            <input name="placeName" required/>
         </label>
         <label>
             Description
@@ -34,7 +34,7 @@
     const data = await fetchJsonOfPathnameApi();
     const places_ul = document.getElementById("places-ul");
     for (let item of data) {
-        const name = item.name;
+        const name = item.placeName;
         const li = document.createElement("li");
         const a = document.createElement("a");
 

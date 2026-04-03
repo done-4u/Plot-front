@@ -17,7 +17,7 @@
     <form id="character-add-form">
         <label>
             Name
-            <input name="name" required/>
+            <input name="characterName" required/>
         </label>
         <label>
             Description
@@ -33,7 +33,7 @@
     const data = await fetchJsonOfPathnameApi();
     const characters_ul = document.getElementById("characters-ul");
     for (let item of data) {
-        const name = item.name;
+        const name = item.characterName;
         const li = document.createElement("li");
         const a = document.createElement("a");
 

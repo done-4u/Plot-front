@@ -22,10 +22,8 @@
         const times_ol = document.getElementById("times-ol");
         times_ol.replaceChildren();
         for (let item of data) {
-            const order = item.order;
-            const description = item.description;
             const li = document.createElement("li");
-            li.innerText = `${order}. ${description}`;
+            li.innerText = `${item.timeOrder}. ${item.description}`;
             times_ol.appendChild(li);
         }
     }

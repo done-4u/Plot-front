@@ -53,7 +53,7 @@
     tr.appendChild(th);
     for (let place of places) {
         th = document.createElement("th");
-        th.innerText = place.name;
+        th.innerText = place.placeName;
         tr.appendChild(th);
     }
     events_table.appendChild(tr);
@@ -63,26 +63,28 @@
     const event_add_form_place = document.getElementById("event-add-form-place");
     let activeCell = null;
     for (let time of times) {
-        if (time.order == 0) {
+        if (time.timeOrder == 0) {
             continue;
         }
 
         // first column
         const tr = document.createElement("tr");
         const th = document.createElement("th");
-        th.innerText = time.order;
+        th.innerText = time.timeOrder;
         tr.appendChild(th);
 
         // actual table body
         for (let place of places) {
             const td = document.createElement("td");
-            td.setAttribute("timeOrder", time.order);
-            td.setAttribute("placeName", place.name);
+            const timeOrder = time.timeOrder;
+            const placeName = place.placeName;
+            td.setAttribute("timeOrder", timeOrder);
+            td.setAttribute("placeName", placeName);
 
             // event link or event add form
-            if (eventMap.get(time.order)?.get(place.name)) {
+            if (eventMap.get(timeOrder)?.get(placeName)) {
                 const a = document.createElement("a");
-                a.href = `${window.location.pathname}/${time.order}/${place.name}`;
+                a.href = `${window.location.pathname}/${timeOrder}/${placeName}`;
                 a.innerText = "O"
                 td.appendChild(a);
             } else {
@@ -93,8 +95,8 @@
                     activeCell = td;
                     td.classList.add("active");
                     event_add_form.style.display = "";
-                    event_add_form_time.value = time.order
-                    event_add_form_place.value = place.name;
+                    event_add_form_time.value = time.timeOrder
+                    event_add_form_place.value = place.placeName;
                 })
             }
 
