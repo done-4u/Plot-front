@@ -11,27 +11,37 @@
 <form action="/api/sign-up" id="sign-up-form" method="post">
     <fieldset>
         <div>
-            <label for="username">Username</label>
-            <input id="username" minlength="3" name="username" required>
+            <label>
+                Username
+                <input minlength="3" name="username" required>
+            </label>
         </div>
         <div>
-            <label for="password">Password</label>
-            <input id="password" name="password" required type="password">
+            <label>
+                Password
+                <input name="password" required type="password">
+            </label>
         </div>
         <div>
-            <label for="pw-again">Password again</label>
-            <input id="pw-again" required type="password">
+            <label>
+                Password again
+                <input required type="password">
+            </label>
         </div>
     </fieldset>
     <fieldset>
         <div>
-            <label for="email">Email</label>
-            <input id="email" name="email" required type="email">
+            <label>
+                Email
+                <input name="email" required type="email">
+            </label>
             <button>Send verification code</button>
         </div>
         <div>
-            <label for="code">Verification code</label>
-            <input id="code" required>
+            <label>
+                Verification code
+                <input required>
+            </label>
         </div>
     </fieldset>
     <button type="submit">Submit</button>
