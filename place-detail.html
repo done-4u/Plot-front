@@ -8,22 +8,72 @@
 <body>
 <script defer src="/common/confirm-button.js"></script>
 <script defer src="/common/controllable-form.js"></script>
+<script defer src="/common/toggle-div.js"></script>
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
 <h2>Basic Information</h2>
 <controllable-form id="name-form" inner-label-text="Name" inner-required></controllable-form>
 <controllable-form id="description-form" inner-label-text="Description"></controllable-form>
+<h2>Connections</h2>
+<h3>Outgoings</h3>
+<ul id="outgoings-ul"></ul>
+<h3>Incomings</h3>
+<ul id="incomings-ul"></ul>
+<toggle-div button-text="Add connection">
+    <form id="place-connection-add-form">
+        <div>
+            <label>
+                <input name="direction" required type="radio" value="outgoing"> Outgoing
+            </label>
+            <label>
+                <input name="direction" required type="radio" value="incoming"> Incoming
+            </label>
+        </div>
+        <div>
+            <label for="place-connection-add-form-select">Select place</label>
+            <select id="place-connection-add-form-select" name="anotherPlaceName" required>
+                <option>...</option>
+                <!-- JS -->
+            </select>
+            <label>
+                Description
+                <input name="description">
+            </label>
+        </div>
+        <div>
+            <label>
+                <input name="opposite" type="checkbox"> Automatically add opposite direction
+            </label>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</toggle-div>
 <h2>Delete</h2>
 <confirm-button id="delete-button" message="Are you sure to delete this place?">Delete</confirm-button>
 <script type="module">
-    import {fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
+    import {fetchJson, fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const name_form = document.getElementById("name-form");
     const description_form = document.getElementById("description-form");
     name_form.innerValue = data.placeName;
     description_form.innerValue = data.description;
+
+    const connections = await (await fetch("/api" + window.location.pathname + "/connections")).json();
+    const outgoings_ul = document.getElementById("outgoings-ul");
+    const incomings_ul = document.getElementById("incomings-ul");
+    for (let connection of connections) {
+        const li = document.createElement("li");
+        li.innerText = `${connection.anotherPlaceName}: ${connection.description}`
+        if (connection.isOutgoing) {
+            outgoings_ul.appendChild(li);
+        } else {
+            incomings_ul.appendChild(li);
+        }
+    }
 
     const delete_button = document.getElementById("delete-button");
     delete_button.addEventListener("click", async () => {
@@ -62,6 +112,34 @@
             alert("Unable to change the place description.");
         }
     });
+
+    const place_connection_add_form_select = document.getElementById("place-connection-add-form-select");
+    const places = await fetchJson("/api" + upperHref());
+    for (let place of places) {
+        const option = document.createElement("option");
+        const placeName = place.placeName;
+        if (placeName === data.placeName) {
+            continue;
+        }
+        option.value = placeName;
+        option.innerText = placeName;
+        place_connection_add_form_select.appendChild(option);
+    }
+
+    const place_connection_add_form = document.getElementById("place-connection-add-form");
+    place_connection_add_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const response = await fetch("/api" + window.location.pathname + "/connections", {
+            method: "POST",
+            body: formData
+        });
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            window.alert("Unable to create a new connection.")
+        }
+    })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>
