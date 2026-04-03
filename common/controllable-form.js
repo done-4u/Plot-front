@@ -4,7 +4,16 @@ class ControllableForm extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["inner-value", "inner-required"];
+        return ["inner-label-text", "inner-value", "inner-required"];
+    }
+
+    get innerLabelText() {
+        const labelTextContainer = this.getElementsByTagName("span")[0];
+        return labelTextContainer ? labelTextContainer.innerText : this.getAttribute("inner-label-text") || "";
+    }
+
+    set innerLabelText(newValue) {
+        this.setAttribute("inner-label-text", newValue);
     }
 
     get innerValue() {
@@ -23,6 +32,13 @@ class ControllableForm extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "inner-label-text") {
+            const labelTextContainer = this.getElementsByTagName("span")[0];
+            if (labelTextContainer) {
+                labelTextContainer.innerText = newValue;
+            }
+        }
+
         const input = this.getElementsByTagName("input")[0];
         if (!input) {
             return;
@@ -38,6 +54,11 @@ class ControllableForm extends HTMLElement {
     }
 
     syncAttributes() {
+        const labelTextContainer = this.getElementsByTagName("span")[0];
+        if (labelTextContainer) {
+            labelTextContainer.innerText = this.getAttribute("inner-label-text") || "";
+        }
+
         const input = this.querySelector("input");
         if (input) {
             input.value = this.getAttribute("inner-value") || "";
@@ -51,7 +72,10 @@ class ControllableForm extends HTMLElement {
 
         this.innerHTML = `
             <form>
-                <input type="text" value="${initialValue} ${initialRequired}" disabled>
+                <label>
+                    <span></span>
+                    <input type="text" value="${initialValue} ${initialRequired}" disabled>
+                </label>
                 <button type="button" class="edit-button">Edit</button>
                 <button type="submit" class="submit-button" style="display: none;">Submit</button>
             </form>
