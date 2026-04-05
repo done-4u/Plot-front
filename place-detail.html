@@ -51,6 +51,184 @@
         </div>
     </form>
 </toggle-div>
+<svg viewBox="0 0 1000 600">
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+            <polygon points="0 0, 10 5, 0 10" fill="black"/>
+        </marker>
+    </defs>
+    <g id="svg-container"></g>
+</svg>
+<script type="module">
+    const connections = await (await fetch("/api" + window.location.pathname + "/connections")).json();
+    let incoming_connections = [];
+    let outgoing_connections = [];
+    let here_name;
+    for (let connection of connections) {
+        const obj = {name: connection.anotherPlaceName, description: connection.description}
+        here_name = connection.placeName;
+        if (connection.isOutgoing) {
+            outgoing_connections.push(obj);
+        } else {
+            incoming_connections.push(obj);
+        }
+    }
+
+    const svg_container = document.getElementById("svg-container");
+
+    const MIN_X = 0
+    const MIN_Y = 0
+    const MAX_X = 1000
+    const MAX_Y = 600
+    const CENTER_X = (MIN_X + MAX_X) / 2;
+    const CENTER_Y = (MIN_Y + MAX_Y) / 2;
+
+    const nodes = [{id: "center", name: here_name, x: CENTER_X, y: CENTER_Y, fx: CENTER_X, fy: CENTER_Y}];
+    const links = [];
+
+    incoming_connections.forEach((conn, i) => {
+        const id = `in_${i}`;
+        nodes.push({
+            id, name: conn.name,
+            x: MIN_X,
+            y: MIN_Y + (MAX_Y - MIN_Y) / (incoming_connections.length + 1) * (i + 1),
+            type: 'in'
+        });
+        links.push({source: id, target: "center", description: conn.description});
+    });
+
+    outgoing_connections.forEach((conn, i) => {
+        const id = `out_${i}`;
+        nodes.push({
+            id, name: conn.name,
+            x: MAX_X,
+            y: MIN_Y + (MAX_Y - MIN_Y) / (outgoing_connections.length + 1) * (i + 1),
+            type: 'out'
+        });
+        links.push({source: "center", target: id, description: conn.description});
+    });
+
+    const SPRING_LENGTH = 200;
+    const SPRING_COEFFICIENT = 0.08;
+    const REPULSION = 8000;
+    const FRICTION_COEFFICIENT = 0.8;
+    const BIAS_STRENGTH = 0.08;
+
+    nodes.forEach(n => {
+        n.vx = 0;
+        n.vy = 0;
+    });
+
+    function updatePhysics() {
+        // 1. Repulsion among all nodes
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const nodeA = nodes[i];
+                const nodeB = nodes[j];
+                const dx = nodeA.x - nodeB.x;
+                const dy = nodeA.y - nodeB.y;
+                const distSq = dx * dx + dy * dy || 1;
+                const force = REPULSION / distSq;
+                const fx = (dx / Math.sqrt(distSq)) * force;
+                const fy = (dy / Math.sqrt(distSq)) * force;
+                nodeA.vx += fx;
+                nodeA.vy += fy;
+                nodeB.vx -= fx;
+                nodeB.vy -= fy;
+            }
+        }
+
+        // 2. Attraction between pairs for each link
+        links.forEach(link => {
+            const s = nodes.find(n => n.id === link.source);
+            const t = nodes.find(n => n.id === link.target);
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (dist - SPRING_LENGTH) * SPRING_COEFFICIENT;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            s.vx += fx;
+            s.vy += fy;
+            t.vx -= fx;
+            t.vy -= fy;
+        });
+
+        // 3. Add left/right bias
+        nodes.forEach(node => {
+            if (node.fx !== undefined) return;
+
+            // Left incoming, right outgoing
+            if (node.type === 'in') {
+                node.vx += (MIN_X - node.x) * BIAS_STRENGTH;
+            } else if (node.type === 'out') {
+                node.vx += (MAX_X - node.x) * BIAS_STRENGTH;
+            }
+
+            node.vx *= FRICTION_COEFFICIENT;
+            node.vy *= FRICTION_COEFFICIENT;
+            node.x += node.vx;
+            node.y += node.vy;
+        });
+    }
+
+    const RECT_WIDTH = 90;
+    const RECT_HEIGHT = 34;
+
+    function render() {
+        svg_container.innerHTML = '';
+        links.forEach(link => {
+            const s = nodes.find(n => n.id === link.source);
+            const t = nodes.find(n => n.id === link.target);
+            const midX = (s.x + t.x) / 2;
+            const midY = (s.y + t.y) / 2;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const d = `M ${s.x} ${s.y} L ${midX} ${midY} L ${t.x} ${t.y}`;
+            path.setAttribute("d", d);
+            path.setAttribute("stroke", "black");
+            path.setAttribute("fill", "none");
+            path.setAttribute("marker-mid", "url(#arrowhead)");
+            svg_container.appendChild(path);
+
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", midX);
+            txt.setAttribute("y", midY - 10);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("font-size", "11px");
+            txt.textContent = link.description;
+            svg_container.appendChild(txt);
+        });
+
+        nodes.forEach(node => {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", node.x - RECT_WIDTH / 2);
+            rect.setAttribute("y", node.y - RECT_HEIGHT / 2);
+            rect.setAttribute("width", RECT_WIDTH);
+            rect.setAttribute("height", RECT_HEIGHT);
+            rect.setAttribute("fill", "white");
+            rect.setAttribute("stroke", "black");
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", node.x);
+            txt.setAttribute("y", node.y);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("dominant-baseline", "middle");
+            txt.textContent = node.name;
+            g.appendChild(rect);
+            g.appendChild(txt);
+            svg_container.appendChild(g);
+        });
+    }
+
+    function loop() {
+        updatePhysics();
+        render();
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
 <h2>Delete</h2>
 <confirm-button id="delete-button" message="Are you sure to delete this place?">Delete</confirm-button>
 <script type="module">
