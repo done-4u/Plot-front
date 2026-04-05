@@ -1,4 +1,4 @@
-class ConfirmButton extends HTMLElement {
+export class ConfirmButton extends HTMLElement {
     constructor() {
         super();
     }

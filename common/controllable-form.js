@@ -1,4 +1,4 @@
-class ControllableForm extends HTMLElement {
+export class ControllableForm extends HTMLElement {
     constructor() {
         super();
     }

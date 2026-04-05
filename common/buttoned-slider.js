@@ -1,4 +1,4 @@
-class ButtonedSlider extends HTMLElement {
+export class ButtonedSlider extends HTMLElement {
     constructor() {
         super();
     }

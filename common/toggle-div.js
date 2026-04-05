@@ -1,4 +1,4 @@
-class ToggleDiv extends HTMLElement {
+export class ToggleDiv extends HTMLElement {
     constructor() {
         super();
         this.isOpen = false;
