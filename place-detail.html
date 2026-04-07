@@ -16,18 +16,18 @@
 <controllable-form id="name-form" inner-label-text="Name" inner-required></controllable-form>
 <controllable-form id="description-form" inner-label-text="Description"></controllable-form>
 <h2>Connections</h2>
-<h3>Outgoings</h3>
-<ul id="outgoings-ul"></ul>
-<h3>Incomings</h3>
-<ul id="incomings-ul"></ul>
+<h3>Outbounds</h3>
+<ul id="outbounds-ul"></ul>
+<h3>Inbounds</h3>
+<ul id="inbounds-ul"></ul>
 <toggle-div button-text="Add connection">
     <form id="place-connection-add-form">
         <div>
             <label>
-                <input name="direction" required type="radio" value="outgoing"> Outgoing
+                <input name="direction" required type="radio" value="outbound"> Outbound
             </label>
             <label>
-                <input name="direction" required type="radio" value="incoming"> Incoming
+                <input name="direction" required type="radio" value="inbound"> Inbound
             </label>
         </div>
         <div>
@@ -61,16 +61,16 @@
 </svg>
 <script type="module">
     const connections = await (await fetch("/api" + window.location.pathname + "/connections")).json();
-    let incoming_connections = [];
-    let outgoing_connections = [];
+    let inbound_connections = [];
+    let outbound_connections = [];
     let here_name;
     for (let connection of connections) {
         const obj = {name: connection.anotherPlaceName, description: connection.description}
         here_name = connection.placeName;
-        if (connection.isOutgoing) {
-            outgoing_connections.push(obj);
+        if (connection.isOutbound) {
+            outbound_connections.push(obj);
         } else {
-            incoming_connections.push(obj);
+            inbound_connections.push(obj);
         }
     }
 
@@ -86,23 +86,23 @@
     const nodes = [{id: "center", name: here_name, x: CENTER_X, y: CENTER_Y, fx: CENTER_X, fy: CENTER_Y}];
     const links = [];
 
-    incoming_connections.forEach((conn, i) => {
+    inbound_connections.forEach((conn, i) => {
         const id = `in_${i}`;
         nodes.push({
             id, name: conn.name,
             x: MIN_X,
-            y: MIN_Y + (MAX_Y - MIN_Y) / (incoming_connections.length + 1) * (i + 1),
+            y: MIN_Y + (MAX_Y - MIN_Y) / (inbound_connections.length + 1) * (i + 1),
             type: 'in'
         });
         links.push({source: id, target: "center", description: conn.description});
     });
 
-    outgoing_connections.forEach((conn, i) => {
+    outbound_connections.forEach((conn, i) => {
         const id = `out_${i}`;
         nodes.push({
             id, name: conn.name,
             x: MAX_X,
-            y: MIN_Y + (MAX_Y - MIN_Y) / (outgoing_connections.length + 1) * (i + 1),
+            y: MIN_Y + (MAX_Y - MIN_Y) / (outbound_connections.length + 1) * (i + 1),
             type: 'out'
         });
         links.push({source: "center", target: id, description: conn.description});
@@ -158,7 +158,7 @@
         nodes.forEach(node => {
             if (node.fx !== undefined) return;
 
-            // Left incoming, right outgoing
+            // Left inbound, right outbound
             if (node.type === 'in') {
                 node.vx += (MIN_X - node.x) * BIAS_STRENGTH;
             } else if (node.type === 'out') {
@@ -241,15 +241,15 @@
     description_form.innerValue = data.description;
 
     const connections = await (await fetch("/api" + window.location.pathname + "/connections")).json();
-    const outgoings_ul = document.getElementById("outgoings-ul");
-    const incomings_ul = document.getElementById("incomings-ul");
+    const outbounds_ul = document.getElementById("outbounds-ul");
+    const inbounds_ul = document.getElementById("inbounds-ul");
     for (let connection of connections) {
         const li = document.createElement("li");
         li.innerText = `${connection.anotherPlaceName}: ${connection.description}`
-        if (connection.isOutgoing) {
-            outgoings_ul.appendChild(li);
+        if (connection.isOutbound) {
+            outbounds_ul.appendChild(li);
         } else {
-            incomings_ul.appendChild(li);
+            inbounds_ul.appendChild(li);
         }
     }
 
