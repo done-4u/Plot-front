@@ -40,7 +40,7 @@
         const response = await fetch("/api" + window.location.pathname, {
             method: "PATCH",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({"name": name_form.innerValue})
+            body: JSON.stringify({"characterName": name_form.innerValue})
         });
         if (response.ok) {
             window.location.href = upperHref();
