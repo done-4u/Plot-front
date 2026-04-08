@@ -311,42 +311,12 @@
     place_link_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-
-        const isOutbound = formData.get("direction") === "outbound";
-        const isOppositeAlso = formData.get("opposite") !== null;
-        const anotherPlaceName = formData.get("anotherPlaceName");
-        const description = formData.get("description");
-
-        if (isOutbound || isOppositeAlso) {
-            const response = await fetch("/api" + window.location.pathname + "/links", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    "endPlaceName": anotherPlaceName,
-                    "description": description
-                })
-            });
-            if (!response.ok) {
-                window.alert("Unable to create a new link.")
-            }
+        const response = await fetch("/api" + window.location.pathname + "/links", {method: "POST", body: formData});
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            alert("Unable to create a new place link.")
         }
-        if (!isOutbound || isOppositeAlso) {
-            const tokens = window.location.pathname.split("/");
-            tokens[tokens.length - 1] = anotherPlaceName.toString();
-            const path = "/api" + tokens.join("/") + "/links";
-            const response = await fetch(path, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    "endPlaceName": placeName,
-                    "description": description
-                })
-            });
-            if (!response.ok) {
-                window.alert("Unable to create a new link.")
-            }
-        }
-        window.location.reload();
     })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
