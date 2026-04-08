@@ -15,13 +15,13 @@
 <h2>Basic Information</h2>
 <controllable-form id="name-form" inner-label-text="Name" inner-required></controllable-form>
 <controllable-form id="description-form" inner-label-text="Description"></controllable-form>
-<h2>Connections</h2>
+<h2>Links</h2>
 <h3>Outbounds</h3>
 <ul id="outbounds-ul"></ul>
 <h3>Inbounds</h3>
 <ul id="inbounds-ul"></ul>
-<toggle-div button-text="Add connection">
-    <form id="place-connection-add-form">
+<toggle-div button-text="Add link">
+    <form id="place-link-add-form">
         <div>
             <label>
                 <input name="direction" required type="radio" value="outbound"> Outbound
@@ -31,8 +31,8 @@
             </label>
         </div>
         <div>
-            <label for="place-connection-add-form-select">Select place</label>
-            <select id="place-connection-add-form-select" name="anotherPlaceName" required>
+            <label for="place-link-add-form-select">Select place</label>
+            <select id="place-link-add-form-select" name="anotherPlaceName" required>
                 <option>...</option>
                 <!-- JS -->
             </select>
@@ -60,18 +60,18 @@
     <g id="svg-container"></g>
 </svg>
 <script type="module">
-    const connections = await (await fetch("/api" + window.location.pathname + "/connections?direction=both")).json();
-    let outbound_connections = [];
-    let inbound_connections = [];
+    const links_data = await (await fetch("/api" + window.location.pathname + "/links?direction=both")).json();
+    let outbound_links = [];
+    let inbound_links = [];
 
     const placeName = window.location.pathname.split("/").at(-1);
-    for (let connection of connections) {
-        if (connection.startPlaceName === placeName) {
-            const obj = {name: connection.endPlaceName, description: connection.description}
-            outbound_connections.push(obj);
+    for (let link of links_data) {
+        if (link.startPlaceName === placeName) {
+            const obj = {name: link.endPlaceName, description: link.description}
+            outbound_links.push(obj);
         } else {
-            const obj = {name: connection.startPlaceName, description: connection.description}
-            inbound_connections.push(obj);
+            const obj = {name: link.startPlaceName, description: link.description}
+            inbound_links.push(obj);
         }
     }
 
@@ -87,23 +87,23 @@
     const nodes = [{id: "center", name: placeName, x: CENTER_X, y: CENTER_Y, fx: CENTER_X, fy: CENTER_Y}];
     const links = [];
 
-    inbound_connections.forEach((conn, i) => {
+    inbound_links.forEach((conn, i) => {
         const id = `in_${i}`;
         nodes.push({
             id, name: conn.name,
             x: MIN_X,
-            y: MIN_Y + (MAX_Y - MIN_Y) / (inbound_connections.length + 1) * (i + 1),
+            y: MIN_Y + (MAX_Y - MIN_Y) / (inbound_links.length + 1) * (i + 1),
             type: 'in'
         });
         links.push({source: id, target: "center", description: conn.description});
     });
 
-    outbound_connections.forEach((conn, i) => {
+    outbound_links.forEach((conn, i) => {
         const id = `out_${i}`;
         nodes.push({
             id, name: conn.name,
             x: MAX_X,
-            y: MIN_Y + (MAX_Y - MIN_Y) / (outbound_connections.length + 1) * (i + 1),
+            y: MIN_Y + (MAX_Y - MIN_Y) / (outbound_links.length + 1) * (i + 1),
             type: 'out'
         });
         links.push({source: "center", target: id, description: conn.description});
@@ -243,16 +243,16 @@
     name_form.innerValue = placeName;
     description_form.innerValue = data.description;
 
-    const connections = await (await fetch("/api" + window.location.pathname + "/connections?direction=both")).json();
+    const links = await (await fetch("/api" + window.location.pathname + "/links?direction=both")).json();
     const outbounds_ul = document.getElementById("outbounds-ul");
     const inbounds_ul = document.getElementById("inbounds-ul");
-    for (let connection of connections) {
+    for (let link of links) {
         const li = document.createElement("li");
-        if (connection.startPlaceName === placeName) {
-            li.innerText = `${connection.endPlaceName}: ${connection.description}`;
+        if (link.startPlaceName === placeName) {
+            li.innerText = `${link.endPlaceName}: ${link.description}`;
             outbounds_ul.appendChild(li);
         } else {
-            li.innerText = `${connection.startPlaceName}: ${connection.description}`;
+            li.innerText = `${link.startPlaceName}: ${link.description}`;
             inbounds_ul.appendChild(li);
         }
     }
@@ -295,7 +295,7 @@
         }
     });
 
-    const place_connection_add_form_select = document.getElementById("place-connection-add-form-select");
+    const place_link_add_form_select = document.getElementById("place-link-add-form-select");
     const places = await fetchJson("/api" + upperHref());
     for (let place of places) {
         const option = document.createElement("option");
@@ -304,11 +304,11 @@
         }
         option.value = place.placeName;
         option.innerText = place.placeName;
-        place_connection_add_form_select.appendChild(option);
+        place_link_add_form_select.appendChild(option);
     }
 
-    const place_connection_add_form = document.getElementById("place-connection-add-form");
-    place_connection_add_form.addEventListener("submit", async (e) => {
+    const place_link_add_form = document.getElementById("place-link-add-form");
+    place_link_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
@@ -318,7 +318,7 @@
         const description = formData.get("description");
 
         if (isOutbound || isOppositeAlso) {
-            const response = await fetch("/api" + window.location.pathname + "/connections", {
+            const response = await fetch("/api" + window.location.pathname + "/links", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -327,13 +327,13 @@
                 })
             });
             if (!response.ok) {
-                window.alert("Unable to create a new connection.")
+                window.alert("Unable to create a new link.")
             }
         }
         if (!isOutbound || isOppositeAlso) {
             const tokens = window.location.pathname.split("/");
             tokens[tokens.length - 1] = anotherPlaceName.toString();
-            const path = "/api" + tokens.join("/") + "/connections";
+            const path = "/api" + tokens.join("/") + "/links";
             const response = await fetch(path, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -343,7 +343,7 @@
                 })
             });
             if (!response.ok) {
-                window.alert("Unable to create a new connection.")
+                window.alert("Unable to create a new link.")
             }
         }
         window.location.reload();
