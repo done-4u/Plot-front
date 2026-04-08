@@ -248,11 +248,17 @@
     const inbounds_ul = document.getElementById("inbounds-ul");
     for (let link of links) {
         const li = document.createElement("li");
+        const controllable_form = document.createElement("controllable-form");
+        li.appendChild(controllable_form);
+        controllable_form.addDeleteButton()
+
         if (link.startPlaceName === placeName) {
-            li.innerText = `${link.endPlaceName}: ${link.description}`;
+            controllable_form.innerLabelText = link.endPlaceName
+            controllable_form.innerValue = link.description
             outbounds_ul.appendChild(li);
         } else {
-            li.innerText = `${link.startPlaceName}: ${link.description}`;
+            controllable_form.innerLabelText = link.startPlaceName
+            controllable_form.innerValue = link.description
             inbounds_ul.appendChild(li);
         }
     }
