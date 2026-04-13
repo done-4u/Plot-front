@@ -1,10 +1,6 @@
-import {ConfirmButton} from "/common/confirm-button.js"
-
 export class ControllableForm extends HTMLElement {
     constructor() {
         super();
-        this._isRendered = false;
-        this._pendingButtons = [];
     }
 
     static get observedAttributes() {
@@ -29,41 +25,22 @@ export class ControllableForm extends HTMLElement {
         this.setAttribute("inner-value", newValue);
     }
 
+    get innerRequired() {
+        return this.hasAttribute("inner-required");
+    }
+
+    set innerRequired(newValue) {
+        if (newValue) {
+            this.setAttribute("inner-required", "");
+        } else {
+            this.removeAttribute("inner-required");
+        }
+    }
+
     connectedCallback() {
         this.render();
         this.setupListeners();
         this.syncAttributes();
-
-        this._isRendered = true;
-        this._processPendingButtons();
-    }
-
-    addDeleteButton(label = "Delete", onClick = null) {
-        if (!this._isRendered) {
-            this._pendingButtons.push({label, onClick});
-            return;
-        }
-
-        const form = this.querySelector("form");
-        if (form) {
-            // TODO: use confirm-button
-            const delete_button = document.createElement("button");
-            delete_button.type = "button";
-            delete_button.textContent = label;
-
-            if (onClick) {
-                delete_button.addEventListener("click", onClick);
-            }
-
-            form.appendChild(delete_button);
-        }
-    }
-
-    _processPendingButtons() {
-        while (this._pendingButtons.length > 0) {
-            const {label, onClick} = this._pendingButtons.shift();
-            this.addDeleteButton(label, onClick);
-        }
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -72,10 +49,13 @@ export class ControllableForm extends HTMLElement {
             if (labelTextContainer) {
                 labelTextContainer.innerText = newValue;
             }
+            return;
         }
 
         const input = this.getElementsByTagName("input")[0];
-        if (!input) return;
+        if (!input) {
+            return;
+        }
 
         if (name === "inner-value") {
             input.value = newValue;
@@ -92,7 +72,7 @@ export class ControllableForm extends HTMLElement {
             labelTextContainer.innerText = this.getAttribute("inner-label-text") || "";
         }
 
-        const input = this.querySelector("input");
+        const input = this.getElementsByTagName("input")[0];
         if (input) {
             input.value = this.getAttribute("inner-value") || "";
             input.required = this.hasAttribute("inner-required");
@@ -100,14 +80,14 @@ export class ControllableForm extends HTMLElement {
     }
 
     render() {
-        const initialValue = this.getAttribute("inner-value") || "";
-        const initialRequired = this.hasAttribute("inner-required") ? "required" : "";
+        const inner_value = this.getAttribute("inner-value") || "";
+        const inner_required = this.hasAttribute("inner-required") ? "required" : "";
 
         this.innerHTML = `
             <form>
                 <label>
                     <span></span>
-                    <input type="text" value="${initialValue}" ${initialRequired} disabled>
+                    <input name="inner" value="${inner_value}" ${inner_required} disabled>
                 </label>
                 <button type="button" class="edit-button">Edit</button>
                 <button type="submit" class="submit-button" style="display: none;">Submit</button>
@@ -120,8 +100,6 @@ export class ControllableForm extends HTMLElement {
         const input = this.getElementsByTagName("input")[0];
         const edit_button = this.getElementsByClassName("edit-button")[0];
         const submit_button = this.getElementsByClassName("submit-button")[0];
-
-        if (!form || !edit_button || !submit_button) return;
 
         edit_button.addEventListener("click", () => {
             input.disabled = false;

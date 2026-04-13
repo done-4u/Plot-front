@@ -60,19 +60,19 @@
     <g id="svg-container"></g>
 </svg>
 <script type="module">
-    const links_data = await (await fetch("/api" + window.location.pathname + "/links?direction=both")).json();
+    const outbound_links_data = await (await fetch("/api" + window.location.pathname + "/links/outbounds")).json();
+    const inbound_links_data = await (await fetch("/api" + window.location.pathname + "/links/inbounds")).json();
     let outbound_links = [];
     let inbound_links = [];
 
     const placeName = window.location.pathname.split("/").at(-1);
-    for (let link of links_data) {
-        if (link.startPlaceName === placeName) {
-            const obj = {name: link.endPlaceName, description: link.description}
-            outbound_links.push(obj);
-        } else {
-            const obj = {name: link.startPlaceName, description: link.description}
-            inbound_links.push(obj);
-        }
+    for (let link of outbound_links_data) {
+        const obj = {name: link.endPlaceName, description: link.description}
+        outbound_links.push(obj);
+    }
+    for (let link of inbound_links_data) {
+        const obj = {name: link.startPlaceName, description: link.description}
+        inbound_links.push(obj);
     }
 
     const svg_container = document.getElementById("svg-container");
@@ -243,24 +243,85 @@
     name_form.innerValue = placeName;
     description_form.innerValue = data.description;
 
-    const links = await (await fetch("/api" + window.location.pathname + "/links?direction=both")).json();
+    const outboundLinks = await (await fetch("/api" + window.location.pathname + "/links/outbounds")).json();
     const outbounds_ul = document.getElementById("outbounds-ul");
+    const inboundLinks = await (await fetch("/api" + window.location.pathname + "/links/inbounds")).json();
     const inbounds_ul = document.getElementById("inbounds-ul");
-    for (let link of links) {
+    for (let link of outboundLinks) {
         const li = document.createElement("li");
         const controllable_form = document.createElement("controllable-form");
-        li.appendChild(controllable_form);
-        controllable_form.addDeleteButton()
 
-        if (link.startPlaceName === placeName) {
-            controllable_form.innerLabelText = link.endPlaceName
-            controllable_form.innerValue = link.description
-            outbounds_ul.appendChild(li);
-        } else {
-            controllable_form.innerLabelText = link.startPlaceName
-            controllable_form.innerValue = link.description
-            inbounds_ul.appendChild(li);
-        }
+        controllable_form.innerLabelText = link.endPlaceName;
+        controllable_form.innerValue = link.description;
+        controllable_form.style.display = "inline-block";
+        li.appendChild(controllable_form);
+
+        const api = "/api" + window.location.pathname + `/links/outbounds/${link.endPlaceName}`;
+        controllable_form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch(api, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"description": controllable_form.innerValue})
+            });
+            if (response.ok) {
+                window.location.href = upperHref();
+            } else {
+                alert("Unable to change the link description.");
+            }
+        });
+
+        const link_delete_button = document.createElement("confirm-button");
+        link_delete_button.innerText = "Delete";
+        link_delete_button.addEventListener("click", async () => {
+            const response = await fetch("/api" + window.location.pathname + `/links/outbounds/${link.endPlaceName}`, {method: "DELETE"});
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to delete this link.")
+            }
+        });
+        li.appendChild(link_delete_button);
+
+        outbounds_ul.appendChild(li);
+    }
+    for (let link of inboundLinks) {
+        const li = document.createElement("li");
+        const controllable_form = document.createElement("controllable-form");
+
+        controllable_form.innerLabelText = link.startPlaceName;
+        controllable_form.innerValue = link.description;
+        controllable_form.style.display = "inline-block";
+        li.appendChild(controllable_form);
+
+        const api = "/api" + window.location.pathname + `/links/inbounds/${link.startPlaceName}`;
+        controllable_form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch(api, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"description": controllable_form.innerValue})
+            });
+            if (response.ok) {
+                window.location.href = upperHref();
+            } else {
+                alert("Unable to change the link description.");
+            }
+        });
+
+        const link_delete_button = document.createElement("confirm-button");
+        link_delete_button.innerText = "Delete";
+        link_delete_button.addEventListener("click", async () => {
+            const response = await fetch(api, {method: "DELETE"});
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to delete this link.")
+            }
+        });
+        li.appendChild(link_delete_button);
+
+        inbounds_ul.appendChild(li);
     }
 
     const delete_button = document.getElementById("delete-button");
@@ -317,12 +378,30 @@
     place_link_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const response = await fetch("/api" + window.location.pathname + "/links", {method: "POST", body: formData});
-        if (response.ok) {
-            window.location.reload();
-        } else {
-            alert("Unable to create a new place link.")
+        const direction = formData.get("direction");
+        const opposite = formData.has("opposite");
+        formData.delete("direction");
+        formData.delete("opposite");
+
+        if (direction === "outbound" || opposite) {
+            const response = await fetch("/api" + window.location.pathname + "/links/outbounds", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                alert("Unable to create a new outbound place link.");
+            }
         }
+        if (direction === "inbound" || opposite) {
+            const response = await fetch("/api" + window.location.pathname + "/links/inbounds", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                alert("Unable to create a new inbound place link.");
+            }
+        }
+        window.location.reload();
     })
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
