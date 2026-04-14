@@ -265,7 +265,7 @@
                 body: JSON.stringify({"description": controllable_form.innerValue})
             });
             if (response.ok) {
-                window.location.href = upperHref();
+                window.location.reload();
             } else {
                 alert("Unable to change the link description.");
             }
@@ -303,7 +303,7 @@
                 body: JSON.stringify({"description": controllable_form.innerValue})
             });
             if (response.ok) {
-                window.location.href = upperHref();
+                window.location.reload();
             } else {
                 alert("Unable to change the link description.");
             }
@@ -402,7 +402,7 @@
             }
         }
         window.location.reload();
-    })
+    });
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
 <script src="/common/navbar-plot.js" type="module"></script>

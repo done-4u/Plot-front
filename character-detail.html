@@ -8,22 +8,322 @@
 <body>
 <script defer type="module" src="/common/confirm-button.js"></script>
 <script defer type="module" src="/common/controllable-form.js"></script>
+<script defer type="module" src="/common/toggle-div.js"></script>
 <div id="navbar-global-container"></div>
 <h1>Title</h1>
 <div id="navbar-plot-container"></div>
 <h2>Basic Information</h2>
 <controllable-form id="name-form" inner-label-text="Name" inner-required></controllable-form>
 <controllable-form id="description-form" inner-label-text="Description"></controllable-form>
+<h2>Links</h2>
+<h3>Outbounds</h3>
+<ul id="outbounds-ul"></ul>
+<h3>Inbounds</h3>
+<ul id="inbounds-ul"></ul>
+<toggle-div button-text="Add link">
+    <form id="character-link-add-form">
+        <div>
+            <label>
+                <input name="direction" required type="radio" value="outbound"> Outbound
+            </label>
+            <label>
+                <input name="direction" required type="radio" value="inbound"> Inbound
+            </label>
+        </div>
+        <div>
+            <label for="character-link-add-form-select">Select character</label>
+            <select id="character-link-add-form-select" name="anotherCharacterName" required>
+                <option>...</option>
+                <!-- JS -->
+            </select>
+            <label>
+                Description
+                <input name="description">
+            </label>
+        </div>
+        <div>
+            <label>
+                <input name="opposite" type="checkbox"> Automatically add opposite direction
+            </label>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</toggle-div>
+<svg viewBox="0 0 1000 600">
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+            <polygon points="0 0, 10 5, 0 10" fill="black"/>
+        </marker>
+    </defs>
+    <g id="svg-container"></g>
+</svg>
+<script type="module">
+    const outbound_links_data = await (await fetch("/api" + window.location.pathname + "/links/outbounds")).json();
+    const inbound_links_data = await (await fetch("/api" + window.location.pathname + "/links/inbounds")).json();
+    let outbound_links = [];
+    let inbound_links = [];
+
+    const characterName = window.location.pathname.split("/").at(-1);
+    for (let link of outbound_links_data) {
+        const obj = {name: link.endCharacterName, description: link.description}
+        outbound_links.push(obj);
+    }
+    for (let link of inbound_links_data) {
+        const obj = {name: link.startCharacterName, description: link.description}
+        inbound_links.push(obj);
+    }
+
+    const svg_container = document.getElementById("svg-container");
+
+    const MIN_X = 0
+    const MIN_Y = 0
+    const MAX_X = 1000
+    const MAX_Y = 600
+    const CENTER_X = (MIN_X + MAX_X) / 2;
+    const CENTER_Y = (MIN_Y + MAX_Y) / 2;
+
+    const nodes = [{id: "center", name: characterName, x: CENTER_X, y: CENTER_Y, fx: CENTER_X, fy: CENTER_Y}];
+    const links = [];
+
+    inbound_links.forEach((conn, i) => {
+        const id = `in_${i}`;
+        nodes.push({
+            id, name: conn.name,
+            x: MIN_X,
+            y: MIN_Y + (MAX_Y - MIN_Y) / (inbound_links.length + 1) * (i + 1),
+            type: 'in'
+        });
+        links.push({source: id, target: "center", description: conn.description});
+    });
+
+    outbound_links.forEach((conn, i) => {
+        const id = `out_${i}`;
+        nodes.push({
+            id, name: conn.name,
+            x: MAX_X,
+            y: MIN_Y + (MAX_Y - MIN_Y) / (outbound_links.length + 1) * (i + 1),
+            type: 'out'
+        });
+        links.push({source: "center", target: id, description: conn.description});
+    });
+
+    const SPRING_LENGTH = 200;
+    const SPRING_COEFFICIENT = 0.08;
+    const REPULSION = 8000;
+    const FRICTION_COEFFICIENT = 0.8;
+    const BIAS_STRENGTH = 0.08;
+
+    nodes.forEach(n => {
+        n.vx = 0;
+        n.vy = 0;
+    });
+
+    function updatePhysics() {
+        // 1. Repulsion among all nodes
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const nodeA = nodes[i];
+                const nodeB = nodes[j];
+                const dx = nodeA.x - nodeB.x;
+                const dy = nodeA.y - nodeB.y;
+                const distSq = dx * dx + dy * dy || 1;
+                const force = REPULSION / distSq;
+                const fx = (dx / Math.sqrt(distSq)) * force;
+                const fy = (dy / Math.sqrt(distSq)) * force;
+                nodeA.vx += fx;
+                nodeA.vy += fy;
+                nodeB.vx -= fx;
+                nodeB.vy -= fy;
+            }
+        }
+
+        // 2. Attraction between pairs for each link
+        links.forEach(link => {
+            const s = nodes.find(n => n.id === link.source);
+            const t = nodes.find(n => n.id === link.target);
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (dist - SPRING_LENGTH) * SPRING_COEFFICIENT;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            s.vx += fx;
+            s.vy += fy;
+            t.vx -= fx;
+            t.vy -= fy;
+        });
+
+        // 3. Add left/right bias
+        nodes.forEach(node => {
+            if (node.fx !== undefined) return;
+
+            // Left inbound, right outbound
+            if (node.type === 'in') {
+                node.vx += (MIN_X - node.x) * BIAS_STRENGTH;
+            } else if (node.type === 'out') {
+                node.vx += (MAX_X - node.x) * BIAS_STRENGTH;
+            }
+
+            node.vx *= FRICTION_COEFFICIENT;
+            node.vy *= FRICTION_COEFFICIENT;
+            node.x += node.vx;
+            node.y += node.vy;
+        });
+    }
+
+    const RECT_WIDTH = 90;
+    const RECT_HEIGHT = 34;
+
+    function render() {
+        svg_container.innerHTML = '';
+        links.forEach(link => {
+            const s = nodes.find(n => n.id === link.source);
+            const t = nodes.find(n => n.id === link.target);
+            const midX = (s.x + t.x) / 2;
+            const midY = (s.y + t.y) / 2;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const d = `M ${s.x} ${s.y} L ${midX} ${midY} L ${t.x} ${t.y}`;
+            path.setAttribute("d", d);
+            path.setAttribute("stroke", "black");
+            path.setAttribute("fill", "none");
+            path.setAttribute("marker-mid", "url(#arrowhead)");
+            svg_container.appendChild(path);
+
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", midX);
+            txt.setAttribute("y", midY - 10);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("font-size", "11px");
+            txt.textContent = link.description;
+            svg_container.appendChild(txt);
+        });
+
+        nodes.forEach(node => {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", node.x - RECT_WIDTH / 2);
+            rect.setAttribute("y", node.y - RECT_HEIGHT / 2);
+            rect.setAttribute("width", RECT_WIDTH);
+            rect.setAttribute("height", RECT_HEIGHT);
+            rect.setAttribute("fill", "white");
+            rect.setAttribute("stroke", "black");
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", node.x);
+            txt.setAttribute("y", node.y);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("dominant-baseline", "middle");
+            txt.textContent = node.name;
+            g.appendChild(rect);
+            g.appendChild(txt);
+            svg_container.appendChild(g);
+        });
+    }
+
+    function loop() {
+        updatePhysics();
+        render();
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
 <h2>Delete</h2>
 <confirm-button id="delete-button" message="Are you sure to delete this character?">Delete</confirm-button>
 <script type="module">
-    import {fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
+    import {fetchJson, fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const name_form = document.getElementById("name-form");
     const description_form = document.getElementById("description-form");
-    name_form.innerValue = data.characterName;
+    const characterName = data.characterName;
+
+    name_form.innerValue = characterName;
     description_form.innerValue = data.description;
+
+    const outboundLinks = await (await fetch("/api" + window.location.pathname + "/links/outbounds")).json();
+    const outbounds_ul = document.getElementById("outbounds-ul");
+    const inboundLinks = await (await fetch("/api" + window.location.pathname + "/links/inbounds")).json();
+    const inbounds_ul = document.getElementById("inbounds-ul");
+
+    for (let link of outboundLinks) {
+        const li = document.createElement("li");
+        const controllable_form = document.createElement("controllable-form");
+
+        controllable_form.innerLabelText = link.endCharacterName;
+        controllable_form.innerValue = link.description;
+        controllable_form.style.display = "inline-block";
+        li.appendChild(controllable_form);
+
+        const api = "/api" + window.location.pathname + `/links/outbounds/${link.endCharacterName}`;
+        controllable_form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch(api, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"description": controllable_form.innerValue})
+            });
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to change the link description.");
+            }
+        });
+
+        const link_delete_button = document.createElement("confirm-button");
+        link_delete_button.innerText = "Delete";
+        link_delete_button.addEventListener("click", async () => {
+            const response = await fetch("/api" + window.location.pathname + `/links/outbounds/${link.endCharacterName}`, {method: "DELETE"});
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to delete this link.")
+            }
+        });
+        li.appendChild(link_delete_button);
+
+        outbounds_ul.appendChild(li);
+    }
+    for (let link of inboundLinks) {
+        const li = document.createElement("li");
+        const controllable_form = document.createElement("controllable-form");
+
+        controllable_form.innerLabelText = link.startCharacterName;
+        controllable_form.innerValue = link.description;
+        controllable_form.style.display = "inline-block";
+        li.appendChild(controllable_form);
+
+        const api = "/api" + window.location.pathname + `/links/inbounds/${link.startCharacterName}`;
+        controllable_form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch(api, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({"description": controllable_form.innerValue})
+            });
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to change the link description.");
+            }
+        });
+
+        const link_delete_button = document.createElement("confirm-button");
+        link_delete_button.innerText = "Delete";
+        link_delete_button.addEventListener("click", async () => {
+            const response = await fetch(api, {method: "DELETE"});
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Unable to delete this link.")
+            }
+        });
+        li.appendChild(link_delete_button);
+
+        inbounds_ul.appendChild(li);
+    }
 
     const delete_button = document.getElementById("delete-button");
     delete_button.addEventListener("click", async () => {
@@ -61,6 +361,48 @@
         } else {
             alert("Unable to change the character description.");
         }
+    });
+
+    const character_link_add_form_select = document.getElementById("character-link-add-form-select");
+    const characters = await fetchJson("/api" + upperHref());
+    for (let character of characters) {
+        const option = document.createElement("option");
+        if (character.characterName === characterName) {
+            continue;
+        }
+        option.value = character.characterName;
+        option.innerText = character.characterName;
+        character_link_add_form_select.appendChild(option);
+    }
+
+    const character_link_add_form = document.getElementById("character-link-add-form");
+    character_link_add_form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const direction = formData.get("direction");
+        const opposite = formData.has("opposite");
+        formData.delete("direction");
+        formData.delete("opposite");
+
+        if (direction === "outbound" || opposite) {
+            const response = await fetch("/api" + window.location.pathname + "/links/outbounds", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                alert("Unable to create a new outbound character link.");
+            }
+        }
+        if (direction === "inbound" || opposite) {
+            const response = await fetch("/api" + window.location.pathname + "/links/inbounds", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                alert("Unable to create a new inbound character link.");
+            }
+        }
+        window.location.reload();
     });
 </script>
 <script src="/common/navbar-global.js" type="module"></script>
