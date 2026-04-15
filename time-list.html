@@ -15,7 +15,7 @@
 </ul>
 <button id="time-add-button">Add time</button>
 <script type="module">
-    import {fetchJsonOfPathnameApi} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, fetchPostToPathnameApi} from "/common/utils.js";
 
     async function fetchAndRender() {
         const data = await fetchJsonOfPathnameApi();
@@ -30,10 +30,7 @@
 
     const time_add_button = document.getElementById("time-add-button");
     time_add_button.addEventListener("click", async () => {
-        const response = await fetch("/api" + window.location.pathname, {
-            method: "POST",
-            body: {}
-        });
+        const response = await fetchPostToPathnameApi({});
         if (response.ok) {
             await fetchAndRender();
         } else {

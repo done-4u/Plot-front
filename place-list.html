@@ -29,7 +29,7 @@
 <h3>Map</h3>
 <div id="places-map-container"></div>
 <script type="module">
-    import {fetchJsonOfPathnameApi, lowerHref} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, fetchPostToPathnameApi, lowerHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const places_ul = document.getElementById("places-ul");
@@ -48,10 +48,7 @@
     place_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const response = await fetch("/api" + window.location.pathname, {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetchPostToPathnameApi(formData);
         if (response.ok) {
             window.location.reload();
         } else {

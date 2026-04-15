@@ -24,7 +24,7 @@
     <button id="event-add-form-button" type="submit">Submit</button>
 </form>
 <script type="module">
-    import {fetchJson} from "/common/utils.js";
+    import {fetchJson, fetchPostToPathnameApi} from "/common/utils.js";
 
     const apiPath = "/api" + window.location.pathname;
     const events = await fetchJson(apiPath);
@@ -108,10 +108,8 @@
 
     event_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const formData = new FormData(e.currentTarget);
-        const response = await fetch("/api" + window.location.pathname, {method: "POST", body: formData})
-
+        const response = await fetchPostToPathnameApi(formData);
         if (response.ok) {
             window.location.reload();
         } else {

@@ -58,14 +58,13 @@
     </form>
 </toggle-div>
 <script type="module">
+    import {fetchPostToPathnameApi} from "/common/utils.js";
+
     const plot_add_form = document.getElementById("plot-add-form");
     plot_add_form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const response = await fetch("/api" + window.location.pathname, {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetchPostToPathnameApi(formData);
         if (response.ok) {
             window.location.reload();
         } else {

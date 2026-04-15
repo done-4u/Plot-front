@@ -18,7 +18,7 @@
 <h2>Delete</h2>
 <confirm-button id="delete-button" message="Are you sure to delete this character?">Delete</confirm-button>
 <script type="module">
-    import {fetchJsonOfPathnameApi, upperHref} from "/common/utils.js";
+    import {fetchJsonOfPathnameApi, fetchPatchJsonApi, fetchDeleteApi, upperHref} from "/common/utils.js";
 
     const data = await fetchJsonOfPathnameApi();
     const time_input = document.getElementById("time-input");
@@ -30,7 +30,7 @@
 
     const delete_button = document.getElementById("delete-button");
     delete_button.addEventListener("click", async () => {
-        const response = await fetch("/api" + window.location.pathname, {method: "DELETE"});
+        const response = await fetchDeleteApi(window.location.pathname);
         if (response.ok) {
             window.location.pathname = upperHref()
         } else {
@@ -40,11 +40,7 @@
 
     description_form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const response = await fetch("/api" + window.location.pathname, {
-            method: "PATCH",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({"description": description_form.innerValue})
-        });
+        const response = await fetchPatchJsonApi(window.location.pathname, {"description": description_form.innerValue});
         if (response.ok) {
             window.location.reload();
         } else {
